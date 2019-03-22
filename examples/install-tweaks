@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+git clone https://github.com/navarum/tweaks tweaks.navarum
+cd tweaks.navarum
+PREFIX=$HOME/.local ./screen/BUILD install
