@@ -1,0 +1,178 @@
+From 3440f83afd415eb70c06c86af98130daa864beeb Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum.noreply.github.com>
+Date: Thu, 21 Mar 2019 00:10:25 -0700
+Subject: [PATCH 4/7] Nesting
+
+---
+ src/comm.c    |  3 +++
+ src/display.c |  1 +
+ src/display.h |  3 ++-
+ src/process.c | 63 +++++++++++++++++++++++++++++++++++++++++++++++----
+ 4 files changed, 65 insertions(+), 5 deletions(-)
+
+diff --git a/src/comm.c b/src/comm.c
+index a7ca2f3..88b2b33 100644
+--- a/src/comm.c
++++ b/src/comm.c
+@@ -170,6 +170,7 @@ struct comm comms[RC_LAST + 1] =
+   { "digraph",		NEED_LAYER|ARGS_01 },
+   { "dinfo",		NEED_DISPLAY|ARGS_0 },
+   { "displays",		NEED_LAYER|ARGS_0 },
++  { "down",		NEED_DISPLAY },
+   { "dumptermcap",	NEED_FORE|ARGS_0 },
+   { "echo",		ARGS_12 },
+ #ifdef ENCODINGS
+@@ -301,8 +302,10 @@ struct comm comms[RC_LAST + 1] =
+   { "terminfo",		ARGS_23 },
+   { "time",		ARGS_01 },
+   { "title",		NEED_FORE|ARGS_01 },
++  { "top",		NEED_DISPLAY },
+   { "umask",		ARGS_1|ARGS_ORMORE },
+   { "unsetenv",		ARGS_1 },
++  { "up",		NEED_DISPLAY },
+ #ifdef UTF8
+   { "utf8",		NEED_FORE|ARGS_012 },
+ #endif
+diff --git a/src/display.c b/src/display.c
+index da23ac1..364bf0d 100644
+--- a/src/display.c
++++ b/src/display.c
+@@ -305,6 +305,7 @@ struct mode *Mode;
+   D_termname[sizeof(D_termname) - 1] = 0;
+   D_user = *u;
+   D_processinput = ProcessInput;
++  D_nestlevel = 0;
+   return display;
+ }
+ 
+diff --git a/src/display.h b/src/display.h
+index 2e2e093..ea56ced 100644
+--- a/src/display.h
++++ b/src/display.h
+@@ -190,6 +190,7 @@ struct display
+   int   d_blankerpid;
+   struct event d_blankerev;
+ #endif
++  int d_nestlevel;
+ };
+ 
+ #ifdef MULTI
+@@ -305,7 +306,7 @@ extern struct display TheDisplay;
+ #define D_blankerev	DISPLAY(d_blankerev)
+ #define D_blankerpid	DISPLAY(d_blankerpid)
+ 
+-
++#define D_nestlevel     DISPLAY(d_nestlevel)
+ #define GRAIN 4096	/* Allocation grain size for output buffer */
+ #define OBUF_MAX 256	/* default for obuflimit */
+ 
+diff --git a/src/process.c b/src/process.c
+index 5e7d517..5ede158 100644
+--- a/src/process.c
++++ b/src/process.c
+@@ -557,6 +557,9 @@ InitKeytab()
+   ktab['X'].nr = RC_REMOVE;
+   ktab['F'].nr = RC_FIT;
+   ktab['\t'].nr = RC_FOCUS;
++  ktab['('].nr = RC_DOWN;
++  ktab[')'].nr = RC_UP;
++  ktab['^'].nr = RC_TOP;
+   {
+     char *args[2];
+     args[0] = "up";
+@@ -638,6 +641,18 @@ struct action *act;
+   act->argl = 0;
+ }
+ 
++int
++CheckNestAction(act)
++struct action *act;
++{
++  if(!act || D_nestlevel<=1) return 0;
++  if(act->nr == RC_UP ||
++     act->nr == RC_DOWN ||
++     act->nr == RC_TOP)
++    return 0;
++  return 1;
++}
++
+ /*
+  * ProcessInput: process input from display and feed it into
+  * the layer on canvas D_forecv.
+@@ -812,13 +827,24 @@ int ilen;
+ 	{
+ 	  while (ilen > 0)
+ 	    {
+-	      if ((unsigned char)*s++ == D_user->u_Esc)
++	      if ((unsigned char)*s++ == D_user->u_Esc) {
++#if 1
++		if(D_nestlevel>1) {
++		  char c=*(s-1);
++		  char *cp=&c;
++		  int l=1;
++		  DoProcess(fore, &cp, &l, 0);
++		}
++#endif
+ 		break;
++	      }
+ 	      ilen--;
+ 	    }
+ 	  slen -= ilen;
+-	  if (slen)
++	  if (slen) {
+ 	    DoProcess(fore, &ibuf, &slen, 0);
++	    /* slen == 0 */
++	  }
+ 	  if (--ilen == 0)
+ 	    D_ESCseen = ktab;
+ 	}
+@@ -839,8 +865,30 @@ int ilen;
+       else if (ch == D_user->u_MetaEsc) 
+         ch = DefaultMetaEsc;
+ 
+-      if (ch >= 0)
+-        DoAction(&ktabp[ch], ch);
++      if (ch >= 0) {
++        if(D_nestlevel>1
++           || ((D_nestlevel==1) && (ktab[ch].nr == RC_DOWN)) ) {
++          /* TODO: there is a problem here ^, as for UP and TOP, the
++             esc has already been echoed */
++          if(D_nestlevel==1) {
++            /* need to echo escape in this case */
++            char c=D_user->u_Esc, *cp=&c;
++            int l=1;
++            DoProcess(fore, &cp, &l, 0);
++          }
++
++          /* esc will already have been echoed above, send this char
++             as well */
++          {
++            char c=ch, *cp=&c;
++            int l=1;
++            DoProcess(fore, &cp, &l, 0);
++          }
++        }
++        if(!CheckNestAction(&ktab[ch])) {
++          DoAction(&ktab[ch], ch);
++        }
++      }
+       ibuf = (char *)(s + 1);
+       ilen--;
+     }
+@@ -5888,6 +5936,13 @@ int i;
+ 
+   if (act == 0 || act->nr == RC_ILLEGAL)
+     return -1;
++  if(act->nr != RC_STUFF && CheckNestAction(act))
++    /* if we are in nest mode, and action is not a nesting action,
++       then return -1, causing the input string to be echoed to the
++       process. exclude actions which send a string to the process,
++       since these also include terminal translations which always
++       need to be in effect.   */
++    return -1;
+   DoAction(act, 0);
+   return 0;
+ }
+-- 
+2.21.0
+

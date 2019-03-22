@@ -1,0 +1,86 @@
+From 1037f393cc1824ada3e0ae10320dba0bd5ed55cf Mon Sep 17 00:00:00 2001
+From: Sadrul Habib Chowdhury <sadrul@users.sourceforge.net>
+Date: Tue, 12 Aug 2008 22:41:19 -0400
+Subject: [PATCH 7/7] Cherry-pick: Use fuzzy-matching for session names only if
+ required
+
+5e4c7c57bf7e8eb729e9804ab7643d1dbbddd9bb
+---
+ src/socket.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/src/socket.c b/src/socket.c
+index b99342f..367d5a8 100644
+--- a/src/socket.c
++++ b/src/socket.c
+@@ -118,13 +118,14 @@ char *match;
+   int firsts = -1, sockfd;
+   char *firstn = NULL;
+   int nfound = 0, ngood = 0, ndead = 0, nwipe = 0, npriv = 0;
++  int nperfect = 0;
+   struct sent
+     {
+       struct sent *next;
+       int mode;
+       char *name;
+     } *slist, **slisttail, *sent, *nsent;
+-	  
++
+   if (match)
+     {
+       matchlen = strlen(match);
+@@ -153,6 +154,7 @@ char *match;
+   slisttail = &slist;
+   while ((dp = readdir(dirp)))
+     {
++      int cmatch = 0;
+       name = dp->d_name;
+       debug1("- %s\n",  name);
+       if (*name == 0 || *name == '.' || strlen(name) > 2*MAXSTR)
+@@ -173,6 +175,7 @@ char *match;
+ 	    n += 3;
+ 	  if (strncmp(match, n, matchlen))
+ 	    continue;
++	  cmatch = (*(n + matchlen) == 0);
+ 	  debug1("  -> matched %s\n", match);
+ 	}
+       sprintf(SockPath + sdirlen, "/%s", name);
+@@ -295,8 +298,12 @@ char *match;
+ 	  continue;
+ 	}
+       ngood++;
+-      if (fdp && firsts == -1)
++      if (cmatch)
++	nperfect++;
++      if (fdp && (firsts == -1 || (cmatch && nperfect == 1)))
+ 	{
++	  if (firsts != -1)
++	    close(firsts);
+ 	  firsts = sockfd;
+ 	  firstn = sent->name;
+ 	  debug("  taken.\n");
+@@ -305,9 +312,11 @@ char *match;
+         {
+ 	  debug("  discarded.\n");
+ 	  close(sockfd);
+-	} 
++	}
+     }
+   (void)closedir(dirp);
++  if (!lsflag && nperfect == 1)
++    ngood = nperfect;
+   if (nfound && (lsflag || ngood != 1) && !quietflag)
+     {
+       switch(ngood)
+@@ -387,7 +396,7 @@ char *match;
+     *nfoundp = nfound - nwipe;
+   return ngood;
+ }
+-  
++
+ 
+ /*
+ **
+-- 
+2.21.0
+

@@ -1,0 +1,45 @@
+From 3a0499bcd67e8a384973ff38b820831663efa508 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum.noreply.github.com>
+Date: Thu, 21 Mar 2019 03:05:21 -0700
+Subject: [PATCH 6/7] Change setenv to accept multiple arguments and PWD
+
+---
+ src/comm.c    | 2 +-
+ src/process.c | 6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/src/comm.c b/src/comm.c
+index 88b2b33..3e4d402 100644
+--- a/src/comm.c
++++ b/src/comm.c
+@@ -277,7 +277,7 @@ struct comm comms[RC_LAST + 1] =
+ #endif
+   { "select",		ARGS_01 },
+   { "sessionname",	ARGS_01 },
+-  { "setenv",		ARGS_012 },
++  { "setenv",		ARGS_ORMORE },
+   { "setsid",		ARGS_1 },
+   { "shell",		ARGS_1 },
+   { "shelltitle",	ARGS_1 },
+diff --git a/src/process.c b/src/process.c
+index 5ede158..af1136e 100644
+--- a/src/process.c
++++ b/src/process.c
+@@ -3032,8 +3032,14 @@ int key;
+ 	}
+       else
+         {
++	  do {
+           xsetenv(args[0], args[1]);
+           MakeNewEnv();
++	  args += 2;
++	  } while(args[0] && args[1]);
++	  if(args[0]) {
++	    Msg(0, "setenv: odd number of arguments");
++	  }
+ 	}
+       break;
+     case RC_UNSETENV:
+-- 
+2.21.0
+

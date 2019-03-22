@@ -1,0 +1,45 @@
+From 46856aca404128f10461e0f89815cdbbc4278ac2 Mon Sep 17 00:00:00 2001
+From: Jussi Kukkonen <jussi.kukkonen@intel.com>
+Date: Sat, 24 Feb 2018 15:22:05 +0100
+Subject: [PATCH 1/7] Cherry-pick commit fixing configure bug causing delay
+ with excessive close() calls
+
+
+https://git.savannah.gnu.org/cgit/screen.git/commit/?h=screen-v4&id=ec90292592dd2c9d5c108390841e3df24e377ed5
+---
+ src/configure.in | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/src/configure.in b/src/configure.in
+index 1e0387f..0ae8795 100644
+--- a/src/configure.in
++++ b/src/configure.in
+@@ -200,14 +200,23 @@ AC_EGREP_CPP(yes,
+ #endif
+ ], LIBS="$LIBS -lsocket -linet";seqptx=1)
+ 
++AC_CHECKING(SVR4)
++AC_EGREP_CPP(yes,
++[main () {
++#if defined(SVR4) || defined(__SVR4)
++  yes;
++#endif
++], AC_NOTE(- you have a SVR4 system) AC_DEFINE(SVR4) svr4=1)
++if test -n "$svr4" ; then
+ oldlibs="$LIBS"
+ LIBS="$LIBS -lelf"
+ AC_CHECKING(SVR4)
+ AC_TRY_LINK([#include <utmpx.h>
+ ],,
+-[AC_CHECK_HEADER(dwarf.h, AC_DEFINE(SVR4) AC_DEFINE(BUGGYGETLOGIN),
+-[AC_CHECK_HEADER(elf.h, AC_DEFINE(SVR4) AC_DEFINE(BUGGYGETLOGIN))])]
++[AC_CHECK_HEADER(dwarf.h, AC_DEFINE(BUGGYGETLOGIN),
++[AC_CHECK_HEADER(elf.h, AC_DEFINE(BUGGYGETLOGIN))])]
+ ,LIBS="$oldlibs")
++fi
+ 
+ AC_CHECKING(for Solaris 2.x)
+ AC_EGREP_CPP(yes,
+-- 
+2.21.0
+

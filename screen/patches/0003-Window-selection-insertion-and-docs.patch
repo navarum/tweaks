@@ -1,0 +1,164 @@
+From b5e05cc380fe24428af082bcfb773ce6391a16ae Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum.noreply.github.com>
+Date: Thu, 21 Mar 2019 00:05:57 -0700
+Subject: [PATCH 3/7] Window selection/insertion and docs
+
+---
+ src/comm.c             |  1 +
+ src/doc/screen.texinfo | 19 +++++++++++++++
+ src/process.c          | 55 +++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 74 insertions(+), 1 deletion(-)
+
+diff --git a/src/comm.c b/src/comm.c
+index e67f6f6..a7ca2f3 100644
+--- a/src/comm.c
++++ b/src/comm.c
+@@ -197,6 +197,7 @@ struct comm comms[RC_LAST + 1] =
+   { "idle",		ARGS_0|ARGS_ORMORE },
+   { "ignorecase",	ARGS_01 },
+   { "info",		NEED_LAYER|ARGS_0 },
++  { "insert",           NEED_FORE|ARGS_01 },
+ #ifdef ENCODINGS
+   { "kanji",		NEED_FORE|ARGS_12 },
+ #endif
+diff --git a/src/doc/screen.texinfo b/src/doc/screen.texinfo
+index 613f1f2..72cad6e 100644
+--- a/src/doc/screen.texinfo
++++ b/src/doc/screen.texinfo
+@@ -641,6 +641,13 @@ Toggle logging of the current window to the file ``screenlog.@var{n}''.
+ (info)@*
+ Show info about the current window.  @xref{Info}.
+ 
++@item @kbd{C-a y}
++@itemx @kbd{C-a C-y}
++(insert)@*
++Insert the last window that was queried with @code{info} after the
++current window. Requires @code{nav_mode floating}.
++@xref{Next and Previous}
++
+ @item @kbd{C-a k}
+ @itemx @kbd{C-a C-k}
+ (kill)@*
+@@ -987,6 +994,8 @@ Ignore character case in searches.  @xref{Searching}.
+ Display window settings.  @xref{Info}.
+ @item ins_reg [@var{key}]
+ Removed, use @code{paste} instead.  @xref{Registers}.
++@item insert
++Insert a window after the current window. @xref{Next and Previous}
+ @item kill
+ Destroy the current window.  @xref{Kill}.
+ @item lastmsg
+@@ -1438,6 +1447,16 @@ of window number. New windows are placed after the current window, and
+ windows can be rearranged with the @code{insert} command.
+ @end deffn
+ 
++@kindex y
++@kindex C-y
++@deffn Command insert [ @var{number} ]
++(@kbd{C-a y}, @kbd{C-a C-y})@*
++Requires @code{nav_mode floating}. Inserts a window after the current
++one in the next/prev sequence, without renumbering. If no argument is
++specified, insert uses the last window which was queried with the
++@code{info} command. @xref{Info}
++@end deffn
++
+ @node Other Window, Select, Next and Previous, Selecting
+ @section Other Window
+ @kindex C-a
+diff --git a/src/process.c b/src/process.c
+index 5771457..5e7d517 100644
+--- a/src/process.c
++++ b/src/process.c
+@@ -199,6 +199,8 @@ struct action idleaction;
+ char **blankerprg;
+ #endif
+ 
++int last_info_window=-1;
++
+ struct action ktab[256 + KMAP_KEYS];	/* command key translation table */
+ struct kclass {
+   struct kclass *next;
+@@ -469,6 +471,7 @@ InitKeytab()
+   ktab['N'].nr = RC_NUMBER;
+   ktab[Ctrl('h')].nr = ktab[0177].nr = ktab['p'].nr = ktab[Ctrl('p')].nr = RC_PREV;
+   ktab['k'].nr = ktab[Ctrl('k')].nr = RC_KILL;
++  ktab['y'].nr = ktab[Ctrl('y')].nr = RC_INSERT;
+   ktab['l'].nr = ktab[Ctrl('l')].nr = RC_REDISPLAY;
+   ktab['w'].nr = ktab[Ctrl('w')].nr = RC_WINDOWS;
+   ktab['v'].nr = RC_VERSION;
+@@ -1036,7 +1039,7 @@ int key;
+   char **args = act->args;
+   int *argl = act->argl;
+   struct win *p;
+-  int argc, i, n, msgok;
++  int argc, i, n, msgok, m;
+   char *s;
+   char ch;
+   struct display *odisplay = display;
+@@ -1188,6 +1191,55 @@ int key;
+       if (MoreWindows())
+ 	SwitchWindow(PreviousWindow());
+       break;
++    case RC_UP:
++      if(D_nestlevel>0) {
++        D_nestlevel--;
++        if(D_nestlevel==1) {
++          /* how do we get it to redraw the typed characters before
++             displaying the message? */
++#if 0 /* this doesn't work */
++          Flush();
++          RefreshAll(1);
++#endif
++          Msg(0, "Up: returning to %s", SockName);
++        }
++      }
++      break;
++    case RC_DOWN:
++      if(D_nestlevel==0)
++        Msg(0, "Down: entering %s", SockName);
++      D_nestlevel++;
++      break;
++    case RC_TOP:
++      D_nestlevel=0;
++      Msg(0, "Top: returning to %s", SockName);
++      break;
++    case RC_INSERT:
++      /* insert a window after the current one; if called with no
++	 arguments, inserts the window whose info was last queried
++	 with the "info" command */
++      if(nav_mode_fixed) {
++        Msg(0, "Insert requires nav_mode = floating");
++        break;
++      }
++      if(!*args) {
++	if(last_info_window==-1) {
++	  Msg(0, "No window has been selected");
++	  break;
++	}
++	n = last_info_window;
++      } else {
++	if (ParseNum(act, &n) || n >= MAXWIN) break;
++      }
++      p = wtab[n];
++      if(!p) break;
++      if(p==fore) break;
++      m = fore->w_number;
++      NavRemove(p);
++      NavInsert(p,fore);
++      SwitchWindow(NextWindow());
++      Msg(0,"Inserted window %d after window %d",n,m);
++      break;
+     case RC_KILL:
+       {
+ 	char *name;
+@@ -1695,6 +1747,7 @@ int key;
+       break;
+     case RC_INFO:
+       ShowInfo();
++      if(fore) last_info_window = fore->w_number;
+       break;
+     case RC_DINFO:
+       ShowDInfo();
+-- 
+2.21.0
+
