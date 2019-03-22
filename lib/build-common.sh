@@ -21,6 +21,7 @@ clone () {
              git config user.email $gituseremail
         )
         touch .cloned
+        rm .applied .configured || true
     else
         if [ ! -d $srcdir ]; then
             >&2 echo "Looks like $srcdir is missing, remove .cloned to redownload"
@@ -98,6 +99,7 @@ apply () {
     git checkout -b $mybranch-new
     cd $scriptdir
     touch .applied
+    rm .configured || true
 }
 
 # do the configuration. arguments are var=value, e.g. PREFIX=~/.local
@@ -108,7 +110,7 @@ configure () {
         return 0;
     fi
     cd $srcpath
-    rm -f configure
+    rm configure || true
     autoconf
     ./configure "--prefix=$PREFIX"
     if ! grep "undef BUGGYGETLOGIN" config.h ; then
