@@ -2,6 +2,11 @@
 
 set -e
 
-git clone https://github.com/navarum/tweaks tweaks.navarum
-cd tweaks.navarum
+if [ -d tweaks.navarum ]; then
+    cd tweaks.navarum
+    git pull
+else
+    git clone https://github.com/navarum/tweaks tweaks.navarum
+    cd tweaks.navarum
+fi
 PREFIX=$HOME/.local ./screen/BUILD install
