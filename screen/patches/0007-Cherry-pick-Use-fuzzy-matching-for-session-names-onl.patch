@@ -1,4 +1,4 @@
-From 1037f393cc1824ada3e0ae10320dba0bd5ed55cf Mon Sep 17 00:00:00 2001
+From 49aa0f524bb6bb6d12c207fe6c181ee7e0341e46 Mon Sep 17 00:00:00 2001
 From: Sadrul Habib Chowdhury <sadrul@users.sourceforge.net>
 Date: Tue, 12 Aug 2008 22:41:19 -0400
 Subject: [PATCH 7/7] Cherry-pick: Use fuzzy-matching for session names only if
@@ -10,7 +10,7 @@ Subject: [PATCH 7/7] Cherry-pick: Use fuzzy-matching for session names only if
  1 file changed, 13 insertions(+), 4 deletions(-)
 
 diff --git a/src/socket.c b/src/socket.c
-index b99342f..367d5a8 100644
+index 62a73af..ef3d3b1 100644
 --- a/src/socket.c
 +++ b/src/socket.c
 @@ -118,13 +118,14 @@ char *match;

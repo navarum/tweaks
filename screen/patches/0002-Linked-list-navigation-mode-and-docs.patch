@@ -1,4 +1,4 @@
-From 6bdcd21afaa762692fc04e3f170db8e3a0e358aa Mon Sep 17 00:00:00 2001
+From 52e16ed3d6c05d4f50e83db34c8eee8bca4b0068 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Wed, 20 Mar 2019 23:41:24 -0700
 Subject: [PATCH 2/7] Linked-list navigation mode and docs
@@ -15,7 +15,7 @@ Subject: [PATCH 2/7] Linked-list navigation mode and docs
  8 files changed, 109 insertions(+)
 
 diff --git a/src/comm.c b/src/comm.c
-index a46605f..e67f6f6 100644
+index 0934847..9049677 100644
 --- a/src/comm.c
 +++ b/src/comm.c
 @@ -228,6 +228,7 @@ struct comm comms[RC_LAST + 1] =
@@ -39,10 +39,10 @@ index 9e09187..da23ac1 100644
  int hardstatusemu = HSTATUS_IGNORE;
  
 diff --git a/src/doc/screen.texinfo b/src/doc/screen.texinfo
-index 042b994..613f1f2 100644
+index 408305a..0b4e894 100644
 --- a/src/doc/screen.texinfo
 +++ b/src/doc/screen.texinfo
-@@ -1426,6 +1426,18 @@ pressing space.)
+@@ -1423,6 +1423,18 @@ pressing space.)
  Switch to the previous window (the opposite of @kbd{C-a n}).
  @end deffn
  
@@ -62,7 +62,7 @@ index 042b994..613f1f2 100644
  @section Other Window
  @kindex C-a
 diff --git a/src/extern.h b/src/extern.h
-index 90369b6..a2876a5 100644
+index 3010670..6bc9c54 100644
 --- a/src/extern.h
 +++ b/src/extern.h
 @@ -166,6 +166,9 @@ extern void   CarefulUtmp __P((void));
@@ -76,10 +76,10 @@ index 90369b6..a2876a5 100644
  /* loadav.c */
  #ifdef LOADAV
 diff --git a/src/process.c b/src/process.c
-index ab860ab..5771457 100644
+index 7f1a6e1..7639bfe 100644
 --- a/src/process.c
 +++ b/src/process.c
-@@ -104,6 +104,7 @@ extern int VerboseCreate;
+@@ -103,6 +103,7 @@ extern int VerboseCreate;
  #ifdef UTF8
  extern char *screenencodings;
  #endif
@@ -87,7 +87,7 @@ index ab860ab..5771457 100644
  
  static int  CheckArgNum __P((int, char **));
  static void ClearAction __P((struct action *));
-@@ -1113,6 +1114,19 @@ int key;
+@@ -1106,6 +1107,19 @@ int key;
  	Msg(0, "Autonuke turned %s", D_auto_nuke ? "on" : "off");
        break;
  #endif
@@ -107,7 +107,7 @@ index ab860ab..5771457 100644
      case RC_DEFOBUFLIMIT:
        if (ParseNum(act, &defobuflimit) == 0 && msgok)
  	Msg(0, "Default limit set to %d", defobuflimit);
-@@ -4654,6 +4668,10 @@ NextWindow()
+@@ -4605,6 +4619,10 @@ NextWindow()
    register struct win **pp;
    int n = fore ? fore->w_number : -1;
  
@@ -118,7 +118,7 @@ index ab860ab..5771457 100644
    for (pp = wtab + n + 1; pp != wtab + n; pp++)
      {
        if (pp == wtab + MAXWIN)
-@@ -4670,6 +4688,10 @@ PreviousWindow()
+@@ -4621,6 +4639,10 @@ PreviousWindow()
    register struct win **pp;
    int n = fore ? fore->w_number : MAXWIN - 1;
  
@@ -129,7 +129,7 @@ index ab860ab..5771457 100644
    for (pp = wtab + n - 1; pp != wtab + n; pp--)
      {
        if (pp < wtab)
-@@ -4712,6 +4734,13 @@ struct win *wi;
+@@ -4663,6 +4685,13 @@ struct win *wi;
    ASSERT(p);
    *pp = p->w_next;
    wi->w_inlen = 0;
@@ -144,10 +144,10 @@ index ab860ab..5771457 100644
  
    if (windows == 0)
 diff --git a/src/screen.c b/src/screen.c
-index 680d65c..fafb862 100644
+index 70741df..c86905a 100644
 --- a/src/screen.c
 +++ b/src/screen.c
-@@ -200,6 +200,7 @@ int auto_detach = 1;
+@@ -199,6 +199,7 @@ int auto_detach = 1;
  int iflag, rflag, dflag, lsflag, quietflag, wipeflag, xflag;
  int cmdflag;
  int adaptflag;
@@ -156,10 +156,10 @@ index 680d65c..fafb862 100644
  #ifdef MULTIUSER
  char *multi;
 diff --git a/src/window.c b/src/window.c
-index 680fcb3..6c3f4f5 100644
+index 3b60ae0..c5ae257 100644
 --- a/src/window.c
 +++ b/src/window.c
-@@ -54,6 +54,7 @@ extern int ZombieKey_destroy, ZombieKey_resurrect, ZombieKey_onerror;
+@@ -54,6 +54,7 @@ extern int ZombieKey_destroy, ZombieKey_resurrect;
  extern struct layer *flayer;
  extern int maxusercount;
  extern int pty_preopen;
@@ -202,7 +202,7 @@ index 680fcb3..6c3f4f5 100644
  #ifdef MULTIUSER
    /*
     * This is dangerous: without a display we use creators umask
-@@ -1674,7 +1703,37 @@ struct win *w;
+@@ -1672,7 +1701,37 @@ struct win *w;
  
  #endif /* MULTIUSER */
  
@@ -241,7 +241,7 @@ index 680fcb3..6c3f4f5 100644
  /********************************************************************/
  
 diff --git a/src/window.h b/src/window.h
-index 0c7c9ac..654d862 100644
+index 6b59f2a..59b307a 100644
 --- a/src/window.h
 +++ b/src/window.h
 @@ -126,6 +126,9 @@ struct paster;

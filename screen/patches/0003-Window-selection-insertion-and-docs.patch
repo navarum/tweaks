@@ -1,16 +1,16 @@
-From b5e05cc380fe24428af082bcfb773ce6391a16ae Mon Sep 17 00:00:00 2001
+From b7bdfcd147256a14be112c1dd132b4eb178cf623 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 00:05:57 -0700
 Subject: [PATCH 3/7] Window selection/insertion and docs
 
 ---
  src/comm.c             |  1 +
- src/doc/screen.texinfo | 19 +++++++++++++++
- src/process.c          | 55 +++++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 74 insertions(+), 1 deletion(-)
+ src/doc/screen.texinfo | 19 ++++++++++++++
+ src/process.c          | 56 +++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 75 insertions(+), 1 deletion(-)
 
 diff --git a/src/comm.c b/src/comm.c
-index e67f6f6..a7ca2f3 100644
+index 9049677..d7d9afd 100644
 --- a/src/comm.c
 +++ b/src/comm.c
 @@ -197,6 +197,7 @@ struct comm comms[RC_LAST + 1] =
@@ -22,10 +22,10 @@ index e67f6f6..a7ca2f3 100644
    { "kanji",		NEED_FORE|ARGS_12 },
  #endif
 diff --git a/src/doc/screen.texinfo b/src/doc/screen.texinfo
-index 613f1f2..72cad6e 100644
+index 0b4e894..ca38f4e 100644
 --- a/src/doc/screen.texinfo
 +++ b/src/doc/screen.texinfo
-@@ -641,6 +641,13 @@ Toggle logging of the current window to the file ``screenlog.@var{n}''.
+@@ -638,6 +638,13 @@ Toggle logging of the current window to the file ``screenlog.@var{n}''.
  (info)@*
  Show info about the current window.  @xref{Info}.
  
@@ -39,7 +39,7 @@ index 613f1f2..72cad6e 100644
  @item @kbd{C-a k}
  @itemx @kbd{C-a C-k}
  (kill)@*
-@@ -987,6 +994,8 @@ Ignore character case in searches.  @xref{Searching}.
+@@ -984,6 +991,8 @@ Ignore character case in searches.  @xref{Searching}.
  Display window settings.  @xref{Info}.
  @item ins_reg [@var{key}]
  Removed, use @code{paste} instead.  @xref{Registers}.
@@ -48,7 +48,7 @@ index 613f1f2..72cad6e 100644
  @item kill
  Destroy the current window.  @xref{Kill}.
  @item lastmsg
-@@ -1438,6 +1447,16 @@ of window number. New windows are placed after the current window, and
+@@ -1435,6 +1444,16 @@ of window number. New windows are placed after the current window, and
  windows can be rearranged with the @code{insert} command.
  @end deffn
  
@@ -66,19 +66,21 @@ index 613f1f2..72cad6e 100644
  @section Other Window
  @kindex C-a
 diff --git a/src/process.c b/src/process.c
-index 5771457..5e7d517 100644
+index 7639bfe..7865645 100644
 --- a/src/process.c
 +++ b/src/process.c
-@@ -199,6 +199,8 @@ struct action idleaction;
+@@ -198,7 +198,10 @@ struct action idleaction;
  char **blankerprg;
  #endif
  
 +int last_info_window=-1;
 +
- struct action ktab[256 + KMAP_KEYS];	/* command key translation table */
+ struct action ktab[256];	/* command key translation table */
++
  struct kclass {
    struct kclass *next;
-@@ -469,6 +471,7 @@ InitKeytab()
+   char *name;
+@@ -468,6 +471,7 @@ InitKeytab()
    ktab['N'].nr = RC_NUMBER;
    ktab[Ctrl('h')].nr = ktab[0177].nr = ktab['p'].nr = ktab[Ctrl('p')].nr = RC_PREV;
    ktab['k'].nr = ktab[Ctrl('k')].nr = RC_KILL;
@@ -86,7 +88,7 @@ index 5771457..5e7d517 100644
    ktab['l'].nr = ktab[Ctrl('l')].nr = RC_REDISPLAY;
    ktab['w'].nr = ktab[Ctrl('w')].nr = RC_WINDOWS;
    ktab['v'].nr = RC_VERSION;
-@@ -1036,7 +1039,7 @@ int key;
+@@ -1029,7 +1033,7 @@ int key;
    char **args = act->args;
    int *argl = act->argl;
    struct win *p;
@@ -95,7 +97,7 @@ index 5771457..5e7d517 100644
    char *s;
    char ch;
    struct display *odisplay = display;
-@@ -1188,6 +1191,55 @@ int key;
+@@ -1181,6 +1185,55 @@ int key;
        if (MoreWindows())
  	SwitchWindow(PreviousWindow());
        break;
@@ -151,7 +153,7 @@ index 5771457..5e7d517 100644
      case RC_KILL:
        {
  	char *name;
-@@ -1695,6 +1747,7 @@ int key;
+@@ -1677,6 +1730,7 @@ int key;
        break;
      case RC_INFO:
        ShowInfo();

@@ -1,4 +1,4 @@
-From 3440f83afd415eb70c06c86af98130daa864beeb Mon Sep 17 00:00:00 2001
+From 7873b98dd4833e129b999e7cb2687084c5c64739 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 00:10:25 -0700
 Subject: [PATCH 4/7] Nesting
@@ -11,7 +11,7 @@ Subject: [PATCH 4/7] Nesting
  4 files changed, 65 insertions(+), 5 deletions(-)
 
 diff --git a/src/comm.c b/src/comm.c
-index a7ca2f3..88b2b33 100644
+index d7d9afd..4a2852a 100644
 --- a/src/comm.c
 +++ b/src/comm.c
 @@ -170,6 +170,7 @@ struct comm comms[RC_LAST + 1] =
@@ -46,10 +46,10 @@ index da23ac1..364bf0d 100644
  }
  
 diff --git a/src/display.h b/src/display.h
-index 2e2e093..ea56ced 100644
+index 49f3ee7..93b0ad7 100644
 --- a/src/display.h
 +++ b/src/display.h
-@@ -190,6 +190,7 @@ struct display
+@@ -187,6 +187,7 @@ struct display
    int   d_blankerpid;
    struct event d_blankerev;
  #endif
@@ -57,7 +57,7 @@ index 2e2e093..ea56ced 100644
  };
  
  #ifdef MULTI
-@@ -305,7 +306,7 @@ extern struct display TheDisplay;
+@@ -302,7 +303,7 @@ extern struct display TheDisplay;
  #define D_blankerev	DISPLAY(d_blankerev)
  #define D_blankerpid	DISPLAY(d_blankerpid)
  
@@ -67,7 +67,7 @@ index 2e2e093..ea56ced 100644
  #define OBUF_MAX 256	/* default for obuflimit */
  
 diff --git a/src/process.c b/src/process.c
-index 5e7d517..5ede158 100644
+index 7865645..f2f2dd7 100644
 --- a/src/process.c
 +++ b/src/process.c
 @@ -557,6 +557,9 @@ InitKeytab()
@@ -77,10 +77,10 @@ index 5e7d517..5ede158 100644
 +  ktab['('].nr = RC_DOWN;
 +  ktab[')'].nr = RC_UP;
 +  ktab['^'].nr = RC_TOP;
-   {
-     char *args[2];
-     args[0] = "up";
-@@ -638,6 +641,18 @@ struct action *act;
+   /* These come last; they may want overwrite others: */
+   if (DefaultEsc >= 0)
+     {
+@@ -632,6 +635,18 @@ struct action *act;
    act->argl = 0;
  }
  
@@ -99,7 +99,7 @@ index 5e7d517..5ede158 100644
  /*
   * ProcessInput: process input from display and feed it into
   * the layer on canvas D_forecv.
-@@ -812,13 +827,24 @@ int ilen;
+@@ -806,13 +821,24 @@ int ilen;
  	{
  	  while (ilen > 0)
  	    {
@@ -126,7 +126,7 @@ index 5e7d517..5ede158 100644
  	  if (--ilen == 0)
  	    D_ESCseen = ktab;
  	}
-@@ -839,8 +865,30 @@ int ilen;
+@@ -833,8 +859,30 @@ int ilen;
        else if (ch == D_user->u_MetaEsc) 
          ch = DefaultMetaEsc;
  
@@ -159,8 +159,8 @@ index 5e7d517..5ede158 100644
        ibuf = (char *)(s + 1);
        ilen--;
      }
-@@ -5888,6 +5936,13 @@ int i;
- 
+@@ -5819,6 +5867,13 @@ int i;
+     act = i < KMAP_KEYS+KMAP_AKEYS ? &dmtab[i] : &kmap_exts[i - (KMAP_KEYS+KMAP_AKEYS)].dm;
    if (act == 0 || act->nr == RC_ILLEGAL)
      return -1;
 +  if(act->nr != RC_STUFF && CheckNestAction(act))

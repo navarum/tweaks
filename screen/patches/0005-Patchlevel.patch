@@ -1,4 +1,4 @@
-From 26d428b924aa1445604fbeff2f0509b1519ee4b0 Mon Sep 17 00:00:00 2001
+From 123c7077c004121268659b31dffba7df72beea2d Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 00:12:31 -0700
 Subject: [PATCH 5/7] Patchlevel
@@ -8,20 +8,20 @@ Subject: [PATCH 5/7] Patchlevel
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/patchlevel.h b/src/patchlevel.h
-index 5ce1300..0912d9e 100644
+index 3bc2517..b0b4358 100644
 --- a/src/patchlevel.h
 +++ b/src/patchlevel.h
-@@ -525,9 +525,9 @@
-  * 2005-12-19, 4.00.03jw3 syntax error.
+@@ -521,9 +521,9 @@
+  *                     -- DISTRIBUTED
   */
  
 -#define ORIGIN "FAU"
 +#define ORIGIN ""
  #define REV 4
  #define VERS 0
- #define PATCHLEVEL 3
--#define DATE "2-May-06"
--#define STATE "jw4"
+ #define PATCHLEVEL 2
+-#define DATE "5-Dec-03"
+-#define STATE ""
 +#define DATE "20-Mar-19"
 +#define STATE "ne"
 -- 

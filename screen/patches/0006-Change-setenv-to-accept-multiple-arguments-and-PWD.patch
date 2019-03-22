@@ -1,4 +1,4 @@
-From 3a0499bcd67e8a384973ff38b820831663efa508 Mon Sep 17 00:00:00 2001
+From 9479eaff1bdff027fdc349be2db997a10e2d9634 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 03:05:21 -0700
 Subject: [PATCH 6/7] Change setenv to accept multiple arguments and PWD
@@ -9,7 +9,7 @@ Subject: [PATCH 6/7] Change setenv to accept multiple arguments and PWD
  2 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/src/comm.c b/src/comm.c
-index 88b2b33..3e4d402 100644
+index 4a2852a..d8de7ee 100644
 --- a/src/comm.c
 +++ b/src/comm.c
 @@ -277,7 +277,7 @@ struct comm comms[RC_LAST + 1] =
@@ -22,10 +22,10 @@ index 88b2b33..3e4d402 100644
    { "shell",		ARGS_1 },
    { "shelltitle",	ARGS_1 },
 diff --git a/src/process.c b/src/process.c
-index 5ede158..af1136e 100644
+index f2f2dd7..fec425a 100644
 --- a/src/process.c
 +++ b/src/process.c
-@@ -3032,8 +3032,14 @@ int key;
+@@ -3015,8 +3015,14 @@ int key;
  	}
        else
          {
