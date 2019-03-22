@@ -1,6 +1,6 @@
 #!/bin/bash
 scriptdir="$(cd $(dirname $0) && pwd)"
-. ../lib/build-common.sh
+. $scriptdir/../lib/build-common.sh
 
 set -e
 

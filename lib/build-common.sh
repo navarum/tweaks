@@ -71,12 +71,15 @@ apply () {
             exit 1;
         fi
     fi
-    git branch -D $mybranch $mybranch-new || true
-    
     git tag -d mybase || true
     git tag mybase $patchbase
     # hide "detached head" message
     git checkout mybase 2>/dev/null
+    # these need to come after 'git checkout mybase', because git will
+    # complain if the branch is checked out
+    git branch -D $mybranch || true
+    git branch -D $mybranch-new || true
+
     git checkout -b $mybranch mybase
     for p in ../patches/*.patch; do
         >&2 echo "Applying $(basename $p)"
