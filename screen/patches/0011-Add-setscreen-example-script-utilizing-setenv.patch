@@ -1,0 +1,42 @@
+From bffa7ea827abbbf47c4d061bdeb53c7b431392e2 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 22 Mar 2019 15:01:43 -0700
+Subject: [PATCH 11/11] Add 'setscreen' example script, utilizing 'setenv'
+
+---
+ src/examples/setscreen | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+ create mode 100755 src/examples/setscreen
+
+diff --git a/src/examples/setscreen b/src/examples/setscreen
+new file mode 100755
+index 0000000..ede2c5e
+--- /dev/null
++++ b/src/examples/setscreen
+@@ -0,0 +1,23 @@
++#!/usr/bin/perl
++# 22 Mar 2019
++
++# Send all the environment variables from the calling process to a
++# screen session
++
++# Usage:
++# setscreen
++# setscreen -S session
++
++if(!grep {$_ eq "-S"} @ARGV) {
++  if(!$ENV{STY}) {
++    die "Need to specify -S STY if not in screen session";
++  }
++  push @ARGV, "-S", $ENV{STY};
++}
++
++delete $ENV{WINDOW};
++delete $ENV{TTY};
++delete $ENV{STY};
++#delete $ENV{TERM};
++
++system("screen",@ARGV,"-X","setenv",%ENV) == 0 or die "system failed: $?";
+-- 
+2.21.0
+

@@ -1,0 +1,48 @@
+From 8aee0e0325db2796f02808e0e4e0da6802dbc268 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 22 Mar 2019 14:19:52 -0700
+Subject: [PATCH 10/11] Socket protocol: report errors better
+
+---
+ src/attacher.c | 7 ++++++-
+ src/screen.c   | 2 +-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/src/attacher.c b/src/attacher.c
+index 792ff97..dd4a9bd 100644
+--- a/src/attacher.c
++++ b/src/attacher.c
+@@ -939,11 +939,16 @@ char **av;
+   for (; *av && n < MAXARGS - 1; ++av, ++n)
+     {
+       len = strlen(*av) + 1;
+-      if (p + len >= m.m.command.cmd + sizeof(m.m.command.cmd) - 1)
++      if (p + len >= m.m.command.cmd + sizeof(m.m.command.cmd) - 1) {
++	Msg(0, "Socket message command exceeded maximum length %ld", sizeof(m.m.command.cmd));
+ 	break;
++      }
+       strcpy(p, *av);
+       p += len;
+     }
++  if( n == MAXARGS-1 ) {
++    Msg(0, "Socket message command exceeded maximum number of arguments %ld", MAXARGS);
++  }
+   *p = 0;
+   m.m.command.nargs = n;
+   strncpy(m.m.attach.auser, LoginName, sizeof(m.m.attach.auser) - 1);
+diff --git a/src/screen.c b/src/screen.c
+index c86905a..46a334f 100644
+--- a/src/screen.c
++++ b/src/screen.c
+@@ -1931,7 +1931,7 @@ VA_DECL
+       display = olddisplay;
+     }
+   else
+-    printf("%s\r\n", buf);
++      fprintf(stderr,"%s\r\n", buf);
+ }
+ 
+ /*
+-- 
+2.21.0
+

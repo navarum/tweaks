@@ -1,8 +1,8 @@
-From 49aa0f524bb6bb6d12c207fe6c181ee7e0341e46 Mon Sep 17 00:00:00 2001
+From c1eab6aa242829771f9211a1723f78abd520bb18 Mon Sep 17 00:00:00 2001
 From: Sadrul Habib Chowdhury <sadrul@users.sourceforge.net>
 Date: Tue, 12 Aug 2008 22:41:19 -0400
-Subject: [PATCH 7/7] Cherry-pick: Use fuzzy-matching for session names only if
- required
+Subject: [PATCH 03/11] Cherry-pick: Use fuzzy-matching for session names only
+ if required
 
 5e4c7c57bf7e8eb729e9804ab7643d1dbbddd9bb
 ---

@@ -1,7 +1,7 @@
-From 52e16ed3d6c05d4f50e83db34c8eee8bca4b0068 Mon Sep 17 00:00:00 2001
+From 5e409644d0ec62b6f8e8db8e802a44e9de375fbb Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Wed, 20 Mar 2019 23:41:24 -0700
-Subject: [PATCH 2/7] Linked-list navigation mode and docs
+Subject: [PATCH 04/11] Linked-list navigation mode and docs
 
 ---
  src/comm.c             |  1 +

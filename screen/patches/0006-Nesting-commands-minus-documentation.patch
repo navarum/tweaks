@@ -1,14 +1,14 @@
-From 7873b98dd4833e129b999e7cb2687084c5c64739 Mon Sep 17 00:00:00 2001
+From cf4da89493e58dea617e3bbfdc8714416a73e885 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 00:10:25 -0700
-Subject: [PATCH 4/7] Nesting
+Subject: [PATCH 06/11] Nesting commands, minus documentation
 
 ---
  src/comm.c    |  3 +++
  src/display.c |  1 +
  src/display.h |  3 ++-
- src/process.c | 63 +++++++++++++++++++++++++++++++++++++++++++++++----
- 4 files changed, 65 insertions(+), 5 deletions(-)
+ src/process.c | 65 +++++++++++++++++++++++++++++++++++++++++++++++----
+ 4 files changed, 67 insertions(+), 5 deletions(-)
 
 diff --git a/src/comm.c b/src/comm.c
 index d7d9afd..4a2852a 100644
@@ -67,7 +67,7 @@ index 49f3ee7..93b0ad7 100644
  #define OBUF_MAX 256	/* default for obuflimit */
  
 diff --git a/src/process.c b/src/process.c
-index 7865645..f2f2dd7 100644
+index 7865645..2d31dfa 100644
 --- a/src/process.c
 +++ b/src/process.c
 @@ -557,6 +557,9 @@ InitKeytab()
@@ -80,10 +80,12 @@ index 7865645..f2f2dd7 100644
    /* These come last; they may want overwrite others: */
    if (DefaultEsc >= 0)
      {
-@@ -632,6 +635,18 @@ struct action *act;
+@@ -632,6 +635,20 @@ struct action *act;
    act->argl = 0;
  }
  
++/* If we are in "nesting" mode then ignore the action, unless it
++ * pertains to changing the nesting level. */
 +int
 +CheckNestAction(act)
 +struct action *act;
@@ -99,7 +101,7 @@ index 7865645..f2f2dd7 100644
  /*
   * ProcessInput: process input from display and feed it into
   * the layer on canvas D_forecv.
-@@ -806,13 +821,24 @@ int ilen;
+@@ -806,13 +823,24 @@ int ilen;
  	{
  	  while (ilen > 0)
  	    {
@@ -126,7 +128,7 @@ index 7865645..f2f2dd7 100644
  	  if (--ilen == 0)
  	    D_ESCseen = ktab;
  	}
-@@ -833,8 +859,30 @@ int ilen;
+@@ -833,8 +861,30 @@ int ilen;
        else if (ch == D_user->u_MetaEsc) 
          ch = DefaultMetaEsc;
  
@@ -159,7 +161,7 @@ index 7865645..f2f2dd7 100644
        ibuf = (char *)(s + 1);
        ilen--;
      }
-@@ -5819,6 +5867,13 @@ int i;
+@@ -5819,6 +5869,13 @@ int i;
      act = i < KMAP_KEYS+KMAP_AKEYS ? &dmtab[i] : &kmap_exts[i - (KMAP_KEYS+KMAP_AKEYS)].dm;
    if (act == 0 || act->nr == RC_ILLEGAL)
      return -1;

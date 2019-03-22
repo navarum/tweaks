@@ -1,8 +1,12 @@
 ## Changes to *[Screen](https://www.gnu.org/software/screen/)*
 
-This version is based on Screen 4.0.2, from 2003.
+This version is based on Screen 4.0.2, from 2003. It is mostly for personal use, as some features still lack documentation, the command names could be chosen better, etc. If I know that someone else is using it, then I would be more motivated to clean it up a bit. Please feel free to ask me to do something on the [TODO list](TODO).
 
-* Add an option `nav_mode` to order the windows as a linked list, rather than as a numbered array. This is more like tabbing window managers. It is like the (more recent) `renumber-windows` option in Tmux, except that the numbers stay the same.
+The [list of patches](patches/).
+
+----------------
+
+* Add an option `nav_mode` to order the windows as a linked list, rather than as a numbered array. This is more like tabbing window managers. It is like the `renumber-windows` option in Tmux, except that the numbers stay the same.
 
 * Ability to move windows by marking and inserting.
 
@@ -10,7 +14,7 @@ This version is based on Screen 4.0.2, from 2003.
 
 * Set more than one environment variable from the command-line.
 
-    This patch was almost trivial. I have a script to copy an environment from my shell into screen, and this makes it possible to write a much faster version.
+    This patch was almost trivial. I have a script to copy an environment from my shell into screen, and this makes it possible to write a much faster version, now it is 0.02s, vs 0.9s before.
 
 ### "Backported" bugfixes:
 
@@ -38,6 +42,3 @@ This version is based on Screen 4.0.2, from 2003.
 
     ... rather than asking everyone else to write their own code to escape the inputs of `stuff`, `setenv`, `chdir`, `exec`, and so on.
 
-----------------
-
-Also see the [TODO list](TODO).

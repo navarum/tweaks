@@ -1,4 +1,5 @@
-- Change nomenclature of nav patch
+- Change nomenclature of nav patch. "nav_mode" -> "window_order",
+  "fixed"->"numeric", "floating"->"linked" ...?
 
 - Add docs for nesting patch
 
@@ -12,6 +13,21 @@
 
     - Infrastructure changes, e.g. print a list of windows from
       command-line (like tmux)
+
+- do Urxvt
+
+- "term" command when TERM env var is set
+
+- Get rid of "fuzzy" session name matching altogether? it prevents us
+  from creating a session called "t" if e.g. "testing" already exists.
+
+- Bug with multiple "-S" arguments?
+
+- Add example *working* .config/user-dirs.dirs
+
+---------------- Finished:
+
+\- Complain when "-X" message is too long for socket
 
 \- Document how to regenerate patch series
 

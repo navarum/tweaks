@@ -1,7 +1,7 @@
-From 9479eaff1bdff027fdc349be2db997a10e2d9634 Mon Sep 17 00:00:00 2001
+From f7f8957e60fccfbaeccbdf0473d6a3886b683364 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 03:05:21 -0700
-Subject: [PATCH 6/7] Change setenv to accept multiple arguments and PWD
+Subject: [PATCH 07/11] setenv: accept multiple arguments
 
 ---
  src/comm.c    | 2 +-
@@ -22,10 +22,10 @@ index 4a2852a..d8de7ee 100644
    { "shell",		ARGS_1 },
    { "shelltitle",	ARGS_1 },
 diff --git a/src/process.c b/src/process.c
-index f2f2dd7..fec425a 100644
+index 2d31dfa..858b007 100644
 --- a/src/process.c
 +++ b/src/process.c
-@@ -3015,8 +3015,14 @@ int key;
+@@ -3017,8 +3017,14 @@ int key;
  	}
        else
          {

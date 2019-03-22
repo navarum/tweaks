@@ -1,0 +1,44 @@
+From 6195991141061849b7773ebaeb3bcd605b11ebb3 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 22 Mar 2019 12:59:56 -0700
+Subject: [PATCH 09/11] setenv: do 'term' and 'chdir' here too
+
+---
+ src/process.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/src/process.c b/src/process.c
+index 858b007..34e960d 100644
+--- a/src/process.c
++++ b/src/process.c
+@@ -3018,9 +3018,24 @@ int key;
+       else
+         {
+ 	  do {
+-          xsetenv(args[0], args[1]);
+-          MakeNewEnv();
+-	  args += 2;
++	    xsetenv(args[0], args[1]);
++	    /* These could be extracted into a function */
++	    if(strcmp(args[0],"PWD")==0) {
++	      char *a[3]; int l[3];
++	      a[0]="chdir"; l[0]=5;
++	      a[1]=args[1]; l[1]=strlen(args[1]);
++	      a[2]=NULL; l[2]=0;
++	      DoCommand(a,l);
++	    }
++	    if(strcmp(args[0],"TERM")==0) {
++	      char *a[3]; int l[3];
++	      a[0]="term"; l[0]=4;
++	      a[1]=args[1]; l[1]=strlen(args[1]);
++	      a[2]=NULL; l[2]=0;
++	      DoCommand(a,l);
++	    }
++	    MakeNewEnv();
++	    args += 2;
+ 	  } while(args[0] && args[1]);
+ 	  if(args[0]) {
+ 	    Msg(0, "setenv: odd number of arguments");
+-- 
+2.21.0
+

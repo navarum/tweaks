@@ -1,7 +1,7 @@
-From ef016ddfc2a4d642755d72ebda075558311e4fb1 Mon Sep 17 00:00:00 2001
+From 44f5ef750f7ce9260c77d4fcbe263079c59f8f20 Mon Sep 17 00:00:00 2001
 From: Jussi Kukkonen <jussi.kukkonen@intel.com>
 Date: Sat, 24 Feb 2018 15:22:05 +0100
-Subject: [PATCH 1/7] Cherry-pick commit fixing configure bug causing delay
+Subject: [PATCH 02/11] Cherry-pick commit fixing configure bug causing delay
  with excessive close() calls
 
 https://git.savannah.gnu.org/cgit/screen.git/commit/?h=screen-v4&id=ec90292592dd2c9d5c108390841e3df24e377ed5

@@ -1,0 +1,49 @@
+From 8752c579019a1e1fcdb62b9b32e38989a8fce6f2 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 22 Mar 2019 14:20:35 -0700
+Subject: [PATCH 08/11] 'message' command: longer maximum length
+
+This is to allow environment to be sent all at once
+---
+ src/screen.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/screen.h b/src/screen.h
+index 832fe6c..f539969 100644
+--- a/src/screen.h
++++ b/src/screen.h
+@@ -87,7 +87,7 @@
+ #define Ctrl(c) ((c)&037)
+ 
+ #define MAXSTR		256
+-#define MAXARGS 	64
++#define MAXARGS 	2048
+ #define MSGWAIT 	5
+ #define MSGMINWAIT 	1
+ #define SILENCEWAIT	30
+@@ -174,6 +174,7 @@ struct mode
+  */
+ #define MSG_VERSION	0	
+ #define MSG_REVISION	(('m'<<24) | ('s'<<16) | ('g'<<8) | MSG_VERSION)
++#define MSG_MAXCMDLEN   65536
+ struct msg
+ {
+   int protocol_revision;	/* reduce harm done by incompatible messages */
+@@ -216,12 +217,12 @@ struct msg
+ 	{
+ 	  char auser[20 + 1];	/* username */
+ 	  int nargs;
+-	  char cmd[MAXPATHLEN];	/* command */
++	  char cmd[MSG_MAXCMDLEN];	/* command */
+ 	  int apid;		/* pid of frontend */
+ 	  char preselect[20];
+ 	}
+       command;
+-      char message[MAXPATHLEN * 2];
++      char message[MSG_MAXCMDLEN * 2];
+     } m;
+ };
+ 
+-- 
+2.21.0
+

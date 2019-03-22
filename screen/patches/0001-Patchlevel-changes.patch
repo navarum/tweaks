@@ -1,7 +1,7 @@
-From 123c7077c004121268659b31dffba7df72beea2d Mon Sep 17 00:00:00 2001
+From cddca933304b3fd107e37cef9c10af8db6964cd9 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 00:12:31 -0700
-Subject: [PATCH 5/7] Patchlevel
+Subject: [PATCH 01/11] Patchlevel changes
 
 ---
  src/patchlevel.h | 6 +++---

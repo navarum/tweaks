@@ -1,7 +1,7 @@
-From b7bdfcd147256a14be112c1dd132b4eb178cf623 Mon Sep 17 00:00:00 2001
+From 34fdc541ee80a3a352e4eb4a8a21aec66b9b0e00 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 00:05:57 -0700
-Subject: [PATCH 3/7] Window selection/insertion and docs
+Subject: [PATCH 05/11] Window selection/insertion and docs
 
 ---
  src/comm.c             |  1 +

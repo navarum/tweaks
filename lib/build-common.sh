@@ -1,3 +1,7 @@
+# XXX check screen/BUILD for usage. the variables which are configured
+# in that file should be given defaults in this one, and
+# screen-specific elements of this file should be removed to that one
+
 builddir=build
 #: ${PREFIX:=$HOME/.local}
 : ${PREFIX:=$HOME/screen-testing}
@@ -11,6 +15,11 @@ browser () {
 }
 
 cd $scriptdir
+
+fn_exists()
+{
+    LC_ALL=C type $1 | grep -q 'shell function'
+}
 
 clone () {
     if [ ! -f .cloned ]; then
@@ -72,16 +81,24 @@ apply () {
             exit 1;
         fi
     fi
+
+    git checkout -q $patchbase -f
+
+    ################
+    # XXX move this into a hook in screen/BUILD
+    (cd src && git rm --cached configure Makefile doc/screen.info-1 doc/screen.info-2 doc/screen.info doc/screen.info-4 doc/screen.info-5 doc/screen.info-3)
+    git commit -m "Remove generated files" -a
+    ################
+
     git tag -d mybase || true
-    git tag mybase $patchbase
-    # hide "detached head" message
-    git checkout mybase 2>/dev/null
+    git tag mybase
+    
     # these need to come after 'git checkout mybase', because git will
     # complain if the branch is checked out
     git branch -D $mybranch || true
     git branch -D $mybranch-new || true
 
-    git checkout -b $mybranch mybase
+    git checkout -b $mybranch
     for p in ../patches/*.patch; do
         >&2 echo "Applying $(basename $p)"
         if ! git am -3 -q $p; then
@@ -102,6 +119,20 @@ apply () {
     rm .configured || true
 }
 
+abort_apply () {
+    cd $srcdir
+    git am --abort
+    git checkout -f mybase
+}
+
+# regenerate_patches () {
+#     return
+#     # XXX check for uncommitted changes in patches/
+#     rm -f patches/*.patch
+#     cd $srcdir
+#     git format-patch mybase -o ../patches
+# }
+
 # do the configuration. arguments are var=value, e.g. PREFIX=~/.local
 configure () {
     apply
@@ -110,7 +141,6 @@ configure () {
         return 0;
     fi
     cd $srcpath
-    rm configure || true
     autoconf
     ./configure "--prefix=$PREFIX"
     if ! grep "undef BUGGYGETLOGIN" config.h ; then
