@@ -1,0 +1,101 @@
+screen version 4.02: 44c5ed24c49b4e78abdf5192abed85885eefce68
+
+commit 44c5ed24c49b4e78abdf5192abed85885eefce68 (tag: mybase)
+Author: jnweiger <jnweiger>
+Date:   Fri Dec 16 18:51:07 2005 +0000
+
+    screen-4.0.2 Dec  5  2003
+
+----------------
+
+commit fixing FD closure:
+
+commit ec90292592dd2c9d5c108390841e3df24e377ed5
+Author: Jussi Kukkonen <jussi.kukkonen@intel.com>
+Date:   Sat Feb 24 15:22:05 2018 +0100
+
+    [PATCH 4/4] Avoid mis-identifying systems as SVR4
+
+    Linux can be misdetected as SVR4 because it has
+    libelf installed. This leads to linking with libelf, even though no
+    symbols from that library were actually used, and to a workaround for
+    a buggy getlogin() being enabled.
+
+    It is not documented which exact SVR4 system had the bug that the
+    workaround was added for, so all I could do is make an educated guess
+    at the #defines its compiler would be likely to set.
+
+----------------
+
+?
+
+commit bf0d5ba370a4502f9b1b578c72a1a1dcc885066d
+Author: Sadrul Habib Chowdhury <sadrul@users.sourceforge.net>
+Date:   Wed Jul 9 18:54:44 2008 -0400
+
+    Repeat last search in the opposite direction.
+    Add vi behaviour of searching in the reverse direction when 'N' is pressedin copy mode.
+    Initial patch was submitted by Benjamin Andresen (#19336).
+
+----------------
+
+NO WANT
+
+commit 98b6b4105b60150c5bf9d022b2e7de698a62a797
+Author: Sadrul Habib Chowdhury <sadrul@users.sourceforge.net>
+Date:   Sun Feb 1 02:31:00 2009 -0500
+
+    Properly parse the commands coming from -X
+    
+    Between parsing the command before and after sending the commands over
+    the socket, I decided on the latter option. Fixes #24924.
+
+fixed: https://savannah.gnu.org/bugs/?24924
+broke: https://savannah.gnu.org/bugs/?47247 (stuff)
+should have used "eval" instead
+
+----------------
+
+WANT
+commit 5e4c7c57bf7e8eb729e9804ab7643d1dbbddd9bb
+Author: Sadrul Habib Chowdhury <sadrul@users.sourceforge.net>
+Date:   Tue Aug 12 22:41:19 2008 -0400
+
+    Use fuzzy-matching for session names only if required
+
+    If there is a session with the exact name specified, then use that one
+    instead of matching other sessions with a similar name. Detailed bug
+    report by Marius Mikucionis
+    (http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=361274)
+
+----------------
+
+NO WANT
+commit 57f81ee3b61fcbe0ce1108875a1ea61d41018a51
+Author: mls <mls>
+Date:   Tue Feb 6 20:44:37 2007 +0000
+
+    - new concepts: layouts, groups
+    - new resize code, we now use weights
+
+----------------
+
+# this version won't attach detached screens for some reason
+# maybe setuid issue? created 'testing'
+srw------- 1 navarum navarum   0 Mar 21 17:55 13523.testing
+prwx------ 1 navarum navarum   0 Mar 21 17:51 16397.tweaks
+prw------- 1 navarum navarum   0 Mar 20 11:08 19175.qd
+prw------- 1 navarum navarum   0 Mar 21 17:51 30617.hw
+prw------- 1 navarum navarum   0 Mar 21 17:29 3281.mail
+
+b12a744ebdda8edf6bc79da6242b6d1240d86c10
+Author: mls <mls>
+Date:   Thu Aug 10 21:13:40 2006 +0000
+
+    typo fixes
+
+----------------
+
+last commit before "first stab at vertical split"
+
+4318a55440a7e696cccff46eb47527604379a0ee

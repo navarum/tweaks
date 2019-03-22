@@ -1,0 +1,27 @@
+- Change nomenclature of nav patch
+
+- Add docs for nesting patch
+
+- Fix set-screen script and include it (it could be an option too)
+
+- List of desired future patches
+
+    - Simplify and remove cruft
+
+    - Incorporate any good patches from mainline
+
+    - Infrastructure changes, e.g. print a list of windows from
+      command-line (like tmux)
+
+\- Document how to regenerate patch series
+
+\- Depend on timestamps of patches
+
+\- Initial commit
+
+\- Explain rationale for inclusion/exclusion
+
+\- Fix install instructions
+
+\- Script to install everything
+

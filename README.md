@@ -7,7 +7,11 @@ others are welcome to join in.
 
     git clone https://github.com/navarum/tweaks tweaks.navarum
     cd tweaks.navarum
-    make apply
-    make PREFIX=$HOME/.local configure
-    make -j8
-    make install
+    PREFIX=$HOME/.local ./screen/BUILD install
+
+(see `examples/install-tweaks`)
+
+Packages:
+
+* [screen](screen/CHANGES.md)
+
