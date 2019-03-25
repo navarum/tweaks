@@ -20,6 +20,15 @@ fn_exists()
     LC_ALL=C type $1 | grep -q 'shell function'
 }
 
+run_if_exists() {
+    FN="$1"; shift
+    if fn_exists "$FN"; then
+        "$FN" "$@";
+    else
+        return 0
+    fi
+}
+
 clone () {
     if [ ! -f .cloned ]; then
         git clone $upstream $srcdir
@@ -83,11 +92,7 @@ apply () {
 
     git checkout -q $patchbase -f
 
-    ################
-    # XXX move this into a hook in screen/BUILD
-    (cd src && git rm --cached configure Makefile doc/screen.info-1 doc/screen.info-2 doc/screen.info doc/screen.info-4 doc/screen.info-5 doc/screen.info-3)
-    git commit -m "Remove generated files" -a
-    ################
+    run_if_exists pre_tag_hook
 
     git tag -d mybase || true
     git tag mybase
@@ -142,10 +147,7 @@ configure () {
     cd $srcpath
     autoconf
     ./configure "--prefix=$PREFIX"
-    if ! grep "undef BUGGYGETLOGIN" config.h ; then
-        >&2 echo "Something went wrong";
-        exit 1;
-    fi
+    run_if_exists post_configure_hook
     cd $scriptdir
     touch .configured
 }
