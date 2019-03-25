@@ -3,8 +3,7 @@
 # screen-specific elements of this file should be removed to that one
 
 builddir=build
-#: ${PREFIX:=$HOME/.local}
-: ${PREFIX:=$HOME/screen-testing}
+: ${PREFIX:=$HOME/navarum-testing}
 mybranch=navarum # should avoid conflicts
 gitusername='Navarum Eliskar'
 gituseremail='48705414+navarum@users.noreply.github.com'
