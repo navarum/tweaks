@@ -12,6 +12,9 @@ browser () {
     # your terminal here
     $XTERM -e zsh >/dev/null 2>&1
 }
+warn () {
+    echo tweaks: "$@" >&2
+}
 
 cd $scriptdir
 
@@ -41,7 +44,7 @@ clone () {
         rm .applied .configured || true
     else
         if [ ! -d $srcdir ]; then
-            >&2 echo "Looks like $srcdir is missing, remove .cloned to redownload"
+            warn "Looks like $srcdir is missing, remove .cloned to redownload"
             exit 1
         fi
     fi
@@ -55,7 +58,7 @@ _all_older () {
     than=$1
     while read -rd '' f; do
         if ! test "$f" -ot "$than"; then
-            >&2 echo $f is not older than $than
+            warn $f is not older than $than
             return 1;
         fi
     done
@@ -69,23 +72,23 @@ apply () {
     if [ -f .applied ]; then
         printf "%s\0" patches/*.patches | (_all_older .applied)
         if printf "%s\0" patches/* | _all_older .applied; then
-            >&2 echo "Already applied patches; delete .applied to regenerate"
+            warn "Already applied patches; delete .applied to regenerate"
             return 0
         else
-            >&2 echo "Patches modified since last application, reapplying"
+            warn "Patches modified since last application, reapplying"
         fi
     fi
     cd $srcdir
 #    if [ "$(git diff-index HEAD | grep -v configure)" ]; then
     if ! git diff-index --quiet HEAD --; then
-        >&2 echo Working tree dirty, bailing
+        warn Working tree dirty, bailing
         exit 1
     fi
     # clean up safely from a previous 'apply'
     if _ref -q $mybranch && _ref -q $mybranch-new; then
         if [[ "$(_ref $mybranch-new)" != "$(_ref $mybranch)" ]]; then
-            >&2 echo "Error: Branch $mybranch-new doesn't match $mybranch"
-            >&2 echo "Do you have uncommitted changes?"
+            warn "Error: Branch $mybranch-new doesn't match $mybranch"
+            warn "Do you have unexported changes?"
             exit 1;
         fi
     fi
@@ -96,20 +99,21 @@ apply () {
 
     git tag -d mybase || true
     git tag mybase
-    
+
     # these need to come after 'git checkout mybase', because git will
     # complain if the branch is checked out
     git branch -D $mybranch || true
     git branch -D $mybranch-new || true
 
     git checkout -b $mybranch
+    shopt -s nullglob
     for p in ../patches/*.patch; do
-        >&2 echo "Applying $(basename $p)"
+        warn "Applying $(basename $p)"
         if ! git am -3 -q $p; then
-            >&2 echo "Apply failed, opening browser"
+            warn "Apply failed, opening browser"
             browser
             if [ -e .git/rebase-apply ]; then
-                >&2 echo "$srcdir/.git/rebase-apply still exists, exiting"
+                warn "$srcdir/.git/rebase-apply still exists, exiting"
                 exit 1
             fi
         fi
@@ -141,7 +145,7 @@ abort_apply () {
 configure () {
     apply
     if [ -f .configured ]; then
-        >&2 echo "Using old configuration; delete .configured to regenerate"
+        warn "Using old configuration; delete .configured to regenerate"
         return 0;
     fi
     cd $srcpath
