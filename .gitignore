@@ -1,3 +1,6 @@
 *~
 *.log
 TAGS
+.applied
+.cloned
+.configured
