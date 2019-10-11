@@ -26,6 +26,7 @@ git rebase -i mybase
 
 rm -f ../patches/*.patch
 git format-patch mybase -o ../patches
+git branch -f navarum navarum-new # update the branch marker
 
 * Try applying series to a different base:
 
@@ -59,11 +60,11 @@ git am --continue
 The BUILD code is supposed to simple enough so that you can tell what
 it's doing to Git. The basics of the "apply" rule are
 
-cd $srcdir
-git tag mybase $patchbase
-git checkout -b $mybranch
-git am ../patches/*.patch
-git checkout -b $mybranch-new
+    cd $srcdir
+    git tag mybase $patchbase
+    git checkout -b $mybranch
+    git am ../patches/*.patch
+    git checkout -b $mybranch-new
 
 The use of two branches $mybranch and $mybranch-new is so we can keep
 track of what was applied automatically, and what was added after that
