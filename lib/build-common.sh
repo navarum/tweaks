@@ -49,6 +49,7 @@ clone () {
              git config user.name $gitusername &&
              git config user.email $gituseremail
         )
+        run_if_exists post_clone_hook
         touch .cloned
         rm .applied .configured || true
     else
@@ -133,7 +134,7 @@ apply () {
     git checkout -b $mybranch-new
     cd $scriptdir
     touch .applied
-    rm .configured || true
+    rm .configured 2>/dev/null || true
 }
 
 abort_apply () {
@@ -150,6 +151,10 @@ abort_apply () {
 #     git format-patch mybase -o ../patches
 # }
 
+default_configure () {
+    ./configure "--prefix=$PREFIX"
+}
+
 # do the configuration. arguments are var=value, e.g. PREFIX=~/.local
 configure () {
     apply
@@ -158,8 +163,8 @@ configure () {
         return 0;
     fi
     cd $srcpath
-    autoconf
-    ./configure "--prefix=$PREFIX"
+    run_if_exists pre_configure_hook
+    run_if_exists do_configure default_configure
     run_if_exists post_configure_hook
     cd $scriptdir
     touch .configured
