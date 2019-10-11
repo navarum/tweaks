@@ -12,8 +12,6 @@
     - Infrastructure changes, e.g. print a list of windows from
       command-line (like tmux)
 
-- do Urxvt
-
 - "term" command when TERM env var is set
 
 - Get rid of "fuzzy" session name matching altogether? it prevents us
