@@ -3,8 +3,6 @@
 
 - Add docs for nesting patch
 
-- Fix set-screen script and include it (it could be an option too)
-
 - List of desired future patches
 
     - Simplify and remove cruft
@@ -23,9 +21,11 @@
 
 - Bug with multiple "-S" arguments?
 
-- Add example *working* .config/user-dirs.dirs
-
 ---------------- Finished:
+
+\- Set "sticky" bit of socket files so that systemd doesn't delete them
+
+\- Fix setscreen script and include it (it could be an option too)
 
 \- Complain when "-X" message is too long for socket
 
