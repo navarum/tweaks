@@ -9,4 +9,13 @@ else
     git clone https://github.com/navarum/tweaks tweaks.navarum
     cd tweaks.navarum
 fi
-PREFIX=$HOME/.local ./screen/BUILD install
+export PREFIX=$HOME/.local
+FAILED=""
+for pkg in screen pulseaudio urxvt; do
+    ./$pkg/BUILD install || FAILED="$FAILED $pkg"
+done
+
+if [ -z $FAILED ]; then
+    echo "The following packages failed to install: $FAILED"
+    exit 1
+fi
