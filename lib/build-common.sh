@@ -20,7 +20,8 @@ cd $scriptdir
 
 fn_exists()
 {
-    LC_ALL=C type $1 | grep -q 'shell function'
+    LC_ALL=C type -t $1 | grep -q 'function'
+#    LC_ALL=C type $1 | grep -q 'shell function'
 }
 
 # optional second argument is a name of a fallback function
