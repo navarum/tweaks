@@ -23,6 +23,10 @@ pre_configure_hook () {
     ./autogen.sh
 }
 
+do_install () {
+    sudo make -C $srcpath install
+}
+
 . $scriptdir/../lib/build-common.sh
 
 eval "$@"
