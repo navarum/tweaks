@@ -23,11 +23,19 @@ fn_exists()
     LC_ALL=C type $1 | grep -q 'shell function'
 }
 
+# optional second argument is a name of a fallback function
 run_if_exists() {
     FN="$1"; shift
     if fn_exists "$FN"; then
         "$FN" "$@";
     else
+        FN1="$1"
+        if test $FN1; then
+            warn no hook $FN, defaulting to $FN1
+            "$FN1" "$@";
+        else
+            warn no hook $FN
+        fi
         return 0
     fi
 }
