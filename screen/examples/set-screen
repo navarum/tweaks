@@ -1,0 +1,132 @@
+#!/usr/bin/perl
+
+# To use 'set-screen' (better names welcome), you run it in the shell
+# whose environment you want to take a snapshot of. This must be a
+# shell within the screen session and on the same host, but can be a
+# (sub)+shell of the original screen window, as long as the STY
+# environment variable is preserved. Then, when you create a new
+# window, all the environment variable settings and the working
+# directory for the new shell in the new window will be identical to
+# those for the old shell. This is handy when, for example, you want
+# to use ssh-agent settings, or DISPLAY settings, or whatever, which
+# have changed from what they were when you first started screen, but
+# you don't want to manually enter the "setenv" commands for each
+# variable. Or if you change your .zprofile to set some environment
+# variables differently, and want to make use of the changes in
+# previously-running screen sessions. Of course, after running this
+# script the changes will only be seen by new windows, not existing
+# ones.
+
+# You can also do 'STY=<session name> set-screen' from a shell outside
+# of the screen session you want to modify. Anyway. It seems like this
+# functionality must be built in to screen, but I couldn't find it,
+# and I haven't looked elsewhere since it was so simple to write.
+
+# (written a long time ago - 2005? - by Navarum Eliskar, no copyright)
+
+use warnings;
+use strict;
+
+use Cwd;
+
+use Getopt::Long;
+Getopt::Long::Configure ("bundling", "no_ignore_case");
+
+my $sty = $ENV{STY};
+
+# Can your screen set multiple variables at once?
+my $has_multi_setenv = 1;
+
+my($help, @vars, $session, $chdir, $term, $all, $verbose, $old);
+GetOptions('-h|help' => \$help,
+           '-E=s' => \@vars,
+           '-c' => \$chdir,
+           '-t' => \$term,
+           '-S=s' => \$sty,
+           '-a' => \$all,
+           '-v' => \$verbose,
+           '--old' => \$old
+           ) or exit 1;
+
+$has_multi_setenv=0 if($old);
+
+if($help) {
+  print <<EOF;
+Usage: set-screen [-E ENV_VAR]+ [-S SESSION]
+EOF
+}
+
+if(!$sty) {
+  die "Must use -S option or set STY environment variable.\n";
+}
+
+# do everything if nothing specified
+if(!@vars &&
+   !defined($chdir) &&
+   !defined($term)) {
+  $all = 1;
+}
+
+my @scmd = ("screen","-S",$sty,"-X");
+
+# send a command to screen
+sub cmd {
+  my (@cmd)=@_;
+  my $c = join(" ",map {quotemeta $_} @cmd);
+  if($verbose) {
+    warn "@scmd $c";
+  }
+  system(@scmd,@cmd) == 0 or die "Couldn't send command $c";
+}
+
+# pick a suitable default if no action specified
+if(defined($all)) {
+  my %k = %ENV;
+  delete @k{qw(STY TTY WINDOW TERM)};
+  @vars = keys %k;
+  $chdir = 1;
+  $term = 1;
+}
+
+my %E;
+@E{@vars} = @ENV{@vars};
+
+warn "Setting environment variables ".join(" ",@vars)."\n";
+if($has_multi_setenv) {
+  warn "Using multi-var extension\n";
+  if($chdir) {
+    $E{PWD} = getcwd;
+  }
+  if($term) {
+    $E{TERM} = $ENV{TERM};
+  } else {
+    delete $ENV{TERM};
+  }
+  cmd ("setenv", %E);
+
+  # There is a bug where Screen will ignore extra arguments without telling you.
+  # You can test this with e.g.
+  # $ perl -le 'system("screen","-X","setenv","c","a",("a","b")x10000,"c","e")'
+  # (open new window)
+  # $ echo $c
+  # a
+  # - with current settings, it works for 1000 in the above script, but not 10000
+} else {
+  if($chdir) {
+    my $pwd = getcwd;
+    cmd "chdir", $pwd;
+  }
+
+  if($term) {
+    if($ENV{TERM}) {
+      cmd "term", $ENV{TERM};
+    } else {
+      warn "TERM env var is empty, couldn't set terminal type\n";
+    }
+  }
+
+  for(keys %E) {
+    cmd "setenv", $_, $E{$_} if defined $E{$_};
+  }
+}
+
