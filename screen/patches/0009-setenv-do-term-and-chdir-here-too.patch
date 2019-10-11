@@ -1,7 +1,7 @@
-From 6195991141061849b7773ebaeb3bcd605b11ebb3 Mon Sep 17 00:00:00 2001
+From 4b5597a59c8daf6ee42c158995e4bdbf1b4f0de3 Mon Sep 17 00:00:00 2001
 From: Navarum <48705414+navarum@users.noreply.github.com>
 Date: Fri, 22 Mar 2019 12:59:56 -0700
-Subject: [PATCH 09/11] setenv: do 'term' and 'chdir' here too
+Subject: [PATCH 09/13] setenv: do 'term' and 'chdir' here too
 
 ---
  src/process.c | 21 ++++++++++++++++++---
@@ -40,5 +40,5 @@ index 858b007..34e960d 100644
  	  if(args[0]) {
  	    Msg(0, "setenv: odd number of arguments");
 -- 
-2.21.0
+2.23.0
 

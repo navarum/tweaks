@@ -1,0 +1,29 @@
+From 979052bd83183e011caaebcefcdb444f8c866947 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 11 Oct 2019 13:21:46 -0700
+Subject: [PATCH 12/13] Pass S_ISVTX to chmod for socket, to keep systemd from
+ deleting it
+
+---
+ src/socket.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/socket.c b/src/socket.c
+index ef3d3b1..b65dac0 100644
+--- a/src/socket.c
++++ b/src/socket.c
+@@ -76,9 +76,9 @@ extern char *rc_name;
+ extern struct comm comms[];
+ 
+ #ifdef MULTIUSER
+-# define SOCKMODE (S_IWRITE | S_IREAD | (displays ? S_IEXEC : 0) | (multi ? 1 : 0))
++# define SOCKMODE (S_IWRITE | S_IREAD | (displays ? S_IEXEC : 0) | (multi ? 1 : 0) | S_ISVTX)
+ #else
+-# define SOCKMODE (S_IWRITE | S_IREAD | (displays ? S_IEXEC : 0))
++# define SOCKMODE (S_IWRITE | S_IREAD | (displays ? S_IEXEC : 0) | S_ISVTX)
+ #endif
+ 
+ 
+-- 
+2.23.0
+

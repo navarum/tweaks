@@ -1,7 +1,7 @@
-From 8752c579019a1e1fcdb62b9b32e38989a8fce6f2 Mon Sep 17 00:00:00 2001
+From 2d175ef1d7921413e766c8e2b0218564e2fb6a7a Mon Sep 17 00:00:00 2001
 From: Navarum <48705414+navarum@users.noreply.github.com>
 Date: Fri, 22 Mar 2019 14:20:35 -0700
-Subject: [PATCH 08/11] 'message' command: longer maximum length
+Subject: [PATCH 08/13] 'message' command: longer maximum length
 
 This is to allow environment to be sent all at once
 ---
@@ -45,5 +45,5 @@ index 832fe6c..f539969 100644
  };
  
 -- 
-2.21.0
+2.23.0
 

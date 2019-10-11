@@ -1,7 +1,7 @@
-From 8aee0e0325db2796f02808e0e4e0da6802dbc268 Mon Sep 17 00:00:00 2001
+From fc41741afb0b6290627a243d4997aafcbc0a037b Mon Sep 17 00:00:00 2001
 From: Navarum <48705414+navarum@users.noreply.github.com>
 Date: Fri, 22 Mar 2019 14:19:52 -0700
-Subject: [PATCH 10/11] Socket protocol: report errors better
+Subject: [PATCH 10/13] Socket protocol: report errors better
 
 ---
  src/attacher.c | 7 ++++++-
@@ -44,5 +44,5 @@ index c86905a..46a334f 100644
  
  /*
 -- 
-2.21.0
+2.23.0
 

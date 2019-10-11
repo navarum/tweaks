@@ -1,0 +1,70 @@
+From 99a429caf4a3a6b38fce57c030f45fe42a4bac1b Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 11 Oct 2019 13:34:43 -0700
+Subject: [PATCH 13/13] Remove references to stropts.h which is not found in
+ glibc-2.30
+
+---
+ src/process.c | 8 ++++----
+ src/pty.c     | 8 ++++----
+ src/screen.c  | 6 +++---
+ 3 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/src/process.c b/src/process.c
+index 34e960d..ec3dc2d 100644
+--- a/src/process.c
++++ b/src/process.c
+@@ -36,10 +36,10 @@
+ 
+ #include "config.h"
+ 
+-/* for solaris 2.1, Unixware (SVR4.2) and possibly others: */
+-#ifdef SVR4
+-# include <sys/stropts.h>
+-#endif
++/* /\* for solaris 2.1, Unixware (SVR4.2) and possibly others: *\/ */
++/* #ifdef SVR4 */
++/* # include <sys/stropts.h> */
++/* #endif */
+ 
+ #include "screen.h"
+ #include "extern.h"
+diff --git a/src/pty.c b/src/pty.c
+index f89d44c..e3a76ac 100644
+--- a/src/pty.c
++++ b/src/pty.c
+@@ -33,10 +33,10 @@
+ # include <sys/ioctl.h>
+ #endif
+ 
+-/* for solaris 2.1, Unixware (SVR4.2) and possibly others */
+-#ifdef HAVE_SVR4_PTYS
+-# include <sys/stropts.h>
+-#endif
++/* /\* for solaris 2.1, Unixware (SVR4.2) and possibly others *\/ */
++/* #ifdef HAVE_SVR4_PTYS */
++/* # include <sys/stropts.h> */
++/* #endif */
+ 
+ #if defined(sun) && defined(LOCKPTY) && !defined(TIOCEXCL)
+ # include <sys/ttold.h>
+diff --git a/src/screen.c b/src/screen.c
+index 46a334f..8250ece 100644
+--- a/src/screen.c
++++ b/src/screen.c
+@@ -50,9 +50,9 @@
+ 
+ #include "config.h"
+ 
+-#ifdef SVR4
+-# include <sys/stropts.h>
+-#endif
++/* #ifdef SVR4 */
++/* # include <sys/stropts.h> */
++/* #endif */
+ 
+ #if defined(SYSV) && !defined(ISC)
+ # include <sys/utsname.h>
+-- 
+2.23.0
+

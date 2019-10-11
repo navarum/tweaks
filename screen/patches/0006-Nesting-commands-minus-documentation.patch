@@ -1,7 +1,7 @@
-From cf4da89493e58dea617e3bbfdc8714416a73e885 Mon Sep 17 00:00:00 2001
+From d4649b80b2222e01891ffbf57043c40e9f6d9845 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 00:10:25 -0700
-Subject: [PATCH 06/11] Nesting commands, minus documentation
+Subject: [PATCH 06/13] Nesting commands, minus documentation
 
 ---
  src/comm.c    |  3 +++
@@ -176,5 +176,5 @@ index 7865645..2d31dfa 100644
    return 0;
  }
 -- 
-2.21.0
+2.23.0
 

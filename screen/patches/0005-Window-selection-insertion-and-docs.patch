@@ -1,7 +1,7 @@
-From 34fdc541ee80a3a352e4eb4a8a21aec66b9b0e00 Mon Sep 17 00:00:00 2001
+From c574c5be8cb7e968809f09efda05caec2c9d04bb Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 00:05:57 -0700
-Subject: [PATCH 05/11] Window selection/insertion and docs
+Subject: [PATCH 05/13] Window selection/insertion and docs
 
 ---
  src/comm.c             |  1 +
@@ -162,5 +162,5 @@ index 7639bfe..7865645 100644
      case RC_DINFO:
        ShowDInfo();
 -- 
-2.21.0
+2.23.0
 

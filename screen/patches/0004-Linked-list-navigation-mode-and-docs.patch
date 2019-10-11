@@ -1,7 +1,7 @@
-From 5e409644d0ec62b6f8e8db8e802a44e9de375fbb Mon Sep 17 00:00:00 2001
+From e2ffc3f8b8336addea041d8fa6a37fdcb6f1a29c Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Wed, 20 Mar 2019 23:41:24 -0700
-Subject: [PATCH 04/11] Linked-list navigation mode and docs
+Subject: [PATCH 04/13] Linked-list navigation mode and docs
 
 ---
  src/comm.c             |  1 +
@@ -255,5 +255,5 @@ index 6b59f2a..59b307a 100644
    void  *w_data;
    struct layer w_layer;		/* our layer */
 -- 
-2.21.0
+2.23.0
 

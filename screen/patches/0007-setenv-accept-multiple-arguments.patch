@@ -1,7 +1,7 @@
-From f7f8957e60fccfbaeccbdf0473d6a3886b683364 Mon Sep 17 00:00:00 2001
+From 57e69eb533867439310b9cc7714b115d3006848b Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum.noreply.github.com>
 Date: Thu, 21 Mar 2019 03:05:21 -0700
-Subject: [PATCH 07/11] setenv: accept multiple arguments
+Subject: [PATCH 07/13] setenv: accept multiple arguments
 
 ---
  src/comm.c    | 2 +-
@@ -41,5 +41,5 @@ index 2d31dfa..858b007 100644
        break;
      case RC_UNSETENV:
 -- 
-2.21.0
+2.23.0
 
