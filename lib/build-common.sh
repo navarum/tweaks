@@ -175,7 +175,11 @@ build () {
     make -C $srcpath -j8
 }
 
+default_install () {
+    make -C $srcpath install
+}
+
 install () {
     build
-    make -C $srcpath install
+    run_if_exists do_install default_install
 }
