@@ -1,0 +1,173 @@
+From 0143ba59c365eb9d677e4c9350516703d8c26291 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 11 Oct 2019 11:04:18 -0700
+Subject: [PATCH 5/5] Notes and debugging instrumentation
+
+---
+ src/command.C | 39 ++++++++++++++++++++++++++++-----------
+ src/screen.C  | 11 +++++++++--
+ 2 files changed, 37 insertions(+), 13 deletions(-)
+
+diff --git a/src/command.C b/src/command.C
+index bc5f3e64..2d8056e4 100644
+--- a/src/command.C
++++ b/src/command.C
+@@ -2258,6 +2258,10 @@ rxvt_term::cmd_parse ()
+   wchar_t ch = NOCHAR;
+   char *seq_begin; // remember start of esc-sequence here
+ 
++  rxvt_warn("cmd_parse: cmdbuf_ptr=%d %d %d %d\n",cmdbuf_ptr[0],cmdbuf_ptr[1],cmdbuf_ptr[2],cmdbuf_ptr[3]);
++  if(cmdbuf_ptr[2]==114) {
++      rxvt_warn("found r\n");
++  }
+   for (;;)
+     {
+       if (ecb_unlikely (ch == NOCHAR))
+@@ -2893,8 +2897,10 @@ rxvt_term::process_csi_seq ()
+             break;
+ 
+           case '?':
+-            if (ch == 'h' || ch == 'l' || ch == 'r' || ch == 's' || ch == 't')
++              if (ch == 'h' || ch == 'l' || ch == 'r' || ch == 's' || ch == 't') {
++                  rxvt_warn("calling process_terminal_mode with ?%c, nargs=%d, priv=%d\n", ch, nargs, priv);
+               process_terminal_mode (ch, priv, nargs, arg);
++              }
+             break;
+ 
+           case '!':
+@@ -2915,6 +2921,8 @@ rxvt_term::process_csi_seq ()
+       return;
+     }
+ 
++
++  rxvt_warn("process_csi_seq: ch=%d\n",ch);
+   switch (ch)
+     {
+         /*
+@@ -2938,8 +2946,8 @@ rxvt_term::process_csi_seq ()
+       case CSI_VPB:		/* 8.3.160: (1) LINE POSITION BACKWARD */
+         arg[0] = -arg[0];
+         /* FALLTHROUGH */
+-      case CSI_CUD:		/* 8.3.19: (1) CURSOR DOWN */
+-      case CSI_VPR:		/* 8.3.161: (1) LINE POSITION FORWARD */
++    case CSI_CUD:		/* 8.3.19: (1) CURSOR DOWN */ // 66
++    case CSI_VPR:		/* 8.3.161: (1) LINE POSITION FORWARD */ // 101
+         scr_gotorc (arg[0], 0, RELATIVE);
+         break;
+ 
+@@ -2976,12 +2984,12 @@ rxvt_term::process_csi_seq ()
+         scr_gotorc (arg[0] - 1, 0, C_RELATIVE);
+         break;
+ 
+-      case CSI_CUP:		/* 8.3.21: (1,1) CURSOR POSITION */
+-      case CSI_HVP:		/* 8.3.64: (1,1) CHARACTER AND LINE POSITION */
++      case CSI_CUP:		/* 8.3.21: (1,1) CURSOR POSITION */ // 72
++      case CSI_HVP:		/* 8.3.64: (1,1) CHARACTER AND LINE POSITION */ // 102
+         scr_gotorc (arg[0] - 1, nargs < 2 ? 0 : (arg[1] - 1), 0);
+         break;
+ 
+-      case CSI_CBT:		/* 8.3.7: (1) CURSOR BACKWARD TABULATION */
++      case CSI_CBT:		/* 8.3.7: (1) CURSOR BACKWARD TABULATION */ // 90
+         arg[0] = -arg[0];
+         /* FALLTHROUGH */
+       case CSI_CHT:		/* 8.3.10: (1) CURSOR FORWARD TABULATION */
+@@ -3027,7 +3035,7 @@ rxvt_term::process_csi_seq ()
+         tt_write (VT100_ANS, sizeof (VT100_ANS) - 1);
+         break;
+ 
+-      case CSI_SGR:		/* 8.3.118: (0) SELECT GRAPHIC RENDITION */
++    case CSI_SGR:		/* 8.3.118: (0) SELECT GRAPHIC RENDITION */ // 109
+         process_sgr_mode (nargs, arg);
+         break;
+ 
+@@ -3107,12 +3115,14 @@ rxvt_term::process_csi_seq ()
+         /*
+          * PRIVATE USE beyond this point.  All CSI_7? sequences here
+          */
++        // 114='r'
+       case CSI_72:		/* DECSTBM: set top and bottom margins */
+-          // 10 Oct 2019 "\E[r"
+-          // Disabling this command causes Emacs and Mutt not to clear screen on exit
+-          // which they do by sending 'rmcup'. So it seems natural to disable it when
+-          // the user has turned off secondary screen via .Xdefaults:
++          // disabling this causes Emacs and Mutt not to clear screen on exit
++          rxvt_warn("process_csi_seq: CSI_72, nargs=%d\n",nargs);
++          // 10 Oct 2019
++          // With rmcup, nargs=1?
+           if (!option (Opt_secondaryScreen) && (nargs<2)) {
++              rxvt_warn("breaking\n");
+               break;
+           }
+         if (nargs == 1)
+@@ -3127,6 +3137,10 @@ rxvt_term::process_csi_seq ()
+         scr_cursor (SAVE);
+         break;
+       case CSI_75:
++          // NE 10 Oct 2019
++          // Deactivating this seemed to have no positive effect
++          // rxvt_warn("process_csi_seq: CSI_75, breaking\n");
++          // break;
+         scr_cursor (RESTORE);
+         break;
+ 
+@@ -3754,6 +3768,7 @@ rxvt_term::process_terminal_mode (int mode, int priv ecb_unused, unsigned int na
+             break;
+           }
+ 
++      rxvt_warn("process_terminal_mode, i=%d, arg[i]=%d\n", i, arg[i]);
+       /* extra handling for values with state unkept  */
+       switch (arg[i])
+         {
+@@ -3860,6 +3875,8 @@ rxvt_term::process_terminal_mode (int mode, int priv ecb_unused, unsigned int na
+               scr_change_screen (state);
+               break;
+             case 1049:		/* secondary screen w/ clearing first */
++                rxvt_warn("process_terminal_mode: 1049, not breaking\n");
++//                break;
+               if (option (Opt_secondaryScreen))
+                 if (state)
+                   scr_cursor (SAVE);
+diff --git a/src/screen.C b/src/screen.C
+index 9eb375ac..88ef42c7 100644
+--- a/src/screen.C
++++ b/src/screen.C
+@@ -560,8 +560,11 @@ rxvt_term::scr_swap_screen () NOTHROW
+ void
+ rxvt_term::scr_change_screen (int scrn)
+ {
+-  if (scrn == current_screen)
++  rxvt_warn("scr_change_screen, scrn=%d\n", NSCREENS);
++  if (scrn == current_screen) {
++    rxvt_warn("returning\n");
+     return;
++  }
+ 
+   want_refresh = 1;
+   view_start = 0;
+@@ -575,6 +578,9 @@ rxvt_term::scr_change_screen (int scrn)
+ 
+   current_screen = scrn;
+ 
++  rxvt_warn("scr_change_screen, NSCREENS=%d\n", NSCREENS);
++  rxvt_warn("option (Opt_secondaryScreen)=%d\n", option (Opt_secondaryScreen));
++  rxvt_warn("option (Opt_secondaryScroll)=%d\n", option (Opt_secondaryScroll));
+ #if NSCREENS
+   if (option (Opt_secondaryScreen))
+     {
+@@ -1338,6 +1344,8 @@ rxvt_term::scr_erase_screen (int mode) NOTHROW
+   rend_t ren;
+   XGCValues gcvalue;
+ 
++  rxvt_warn("scr_erase_screen, mode=%d\n", mode);
++
+   want_refresh = 1;
+   ZERO_SCROLLBACK ();
+ 
+@@ -3686,4 +3694,3 @@ rxvt_term::scr_swap_overlay () NOTHROW
+ 
+ #endif
+ /* ------------------------------------------------------------------------- */
+-
+-- 
+2.23.0
+

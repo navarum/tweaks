@@ -1,0 +1,44 @@
+From 5dc272d898bd111e0f9cbd17e39dfb7279b61a96 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Mon, 7 Oct 2019 22:27:13 -0700
+Subject: [PATCH 1/4] X resources cursorBlink should override client request
+
+---
+ src/command.C | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/src/command.C b/src/command.C
+index 7b79f516..f0d6b84b 100644
+--- a/src/command.C
++++ b/src/command.C
+@@ -1045,7 +1045,7 @@ rxvt_term::cursor_blink_reset ()
+       want_refresh = 1;
+     }
+ 
+-  if (option (Opt_cursorBlink) || (priv_modes & PrivMode_BlinkingCursor))
++  if (option (Opt_cursorBlink) && (priv_modes & PrivMode_BlinkingCursor))
+     cursor_blink_ev.again ();
+   else
+     cursor_blink_ev.stop ();
+@@ -4038,7 +4038,17 @@ rxvt_term::set_cursor_style (int style)
+   set_option (Opt_cursorUnderline, cursor_type == 1);
+ 
+ #ifdef CURSOR_BLINK
+-  set_option (Opt_cursorBlink, style & 1);
++  // NE 11 Oct 2019 I'm not sure what priv_modes is but it seems
++  // preferable to set_option, for registering that the application
++  // wants the cursor to blink. By the way this is untested.
++  if(style&1) { // is there a shorthand for this
++      priv_modes |= PrivMode_BlinkingCursor;
++  } else {
++      priv_modes &= ~PrivMode_BlinkingCursor;
++  }
++  // NE 07 Oct 2019 old version: does this make sense? why are we
++  // setting an X resource here?
++  // set_option (Opt_cursorBlink, style & 1);
+   cursor_blink_reset ();
+ #endif
+ 
+-- 
+2.23.0
+

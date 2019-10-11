@@ -1,0 +1,35 @@
+#!/bin/sh
+
+HCLIP=$(xsel -bo | head -n 4)
+
+#: ${MSGCMD:=my-message}
+
+error () {
+    #    $MSGCMD "Doesn't look like a URL or a file:"${1:+" ($1)"}"\n$HCLIP";
+    zenity --question --text "Doesn't look like a URL or a file:\n$HCLIP" \
+         --ok-label "Proceed Anyway" --cancel-label "Cancel" \
+         --width 640
+    # zenity --question --text "Doesn't look like a URL or a file:\n$HCLIP" \
+    #      --ok-label "Cancel" --cancel-label "Proceed Anyway" \
+    #      --width 640
+    # XXX fixme, when user closes window
+    # exit $(( ! $? ))
+    exit $?
+}
+
+if [[ $(xsel -bo | wc -l) -gt 1 ]]; then
+    error "Too many lines";
+fi
+
+case $HCLIP in
+    *://*) exit 0;;
+    magnet:*) exit 0;;
+esac
+
+# check if looks like a domain
+perl -le '$ARGV[0] =~ /^[a-z0-9\.]+$/ || exit 1' -- "$HCLIP" \
+    && exit 0
+
+[[ -e $HCLIP ]] && exit 0
+
+error

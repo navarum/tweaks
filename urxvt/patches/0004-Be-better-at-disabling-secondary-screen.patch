@@ -1,0 +1,63 @@
+From 1cbeec879133b31c059ab025a1be4009314fb262 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 11 Oct 2019 11:21:31 -0700
+Subject: [PATCH 4/4] Be better at disabling secondary screen
+
+---
+ src/command.C   | 7 +++++++
+ src/rsinc.h     | 2 --
+ src/xdefaults.C | 3 +--
+ 3 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/src/command.C b/src/command.C
+index f0d6b84b..bc5f3e64 100644
+--- a/src/command.C
++++ b/src/command.C
+@@ -3108,6 +3108,13 @@ rxvt_term::process_csi_seq ()
+          * PRIVATE USE beyond this point.  All CSI_7? sequences here
+          */
+       case CSI_72:		/* DECSTBM: set top and bottom margins */
++          // 10 Oct 2019 "\E[r"
++          // Disabling this command causes Emacs and Mutt not to clear screen on exit
++          // which they do by sending 'rmcup'. So it seems natural to disable it when
++          // the user has turned off secondary screen via .Xdefaults:
++          if (!option (Opt_secondaryScreen) && (nargs<2)) {
++              break;
++          }
+         if (nargs == 1)
+           scr_scroll_region (arg[0] - 1, MAX_ROWS - 1);
+         else if (nargs == 0 || arg[0] >= arg[1])
+diff --git a/src/rsinc.h b/src/rsinc.h
+index 86d0dfe4..3460e8e3 100644
+--- a/src/rsinc.h
++++ b/src/rsinc.h
+@@ -101,10 +101,8 @@
+   def (imLocale)
+   def (imFont)
+   def (pastableTabs)
+-#ifndef NO_SECONDARY_SCREEN
+   def (secondaryScreen)
+   def (secondaryScroll)
+-#endif
+ #if OFF_FOCUS_FADING
+   def (fade)
+ #endif
+diff --git a/src/xdefaults.C b/src/xdefaults.C
+index 894aa8dd..d0553c95 100644
+--- a/src/xdefaults.C
++++ b/src/xdefaults.C
+@@ -264,10 +264,9 @@ optList[] = {
+               STRG (Rs_modifier, "modifier", "mod", "modifier", "meta modifier = alt|meta|hyper|super|mod1|...|mod5"),
+               RSTRG (Rs_cutchars, "cutchars", "string"),
+               RSTRG (Rs_answerbackstring, "answerbackString", "string"),
+-#ifndef NO_SECONDARY_SCREEN
++/* These need to be read even if NO_SECONDARY_SCREEN is configured, because they are used elsewhere outside of this conditional. */
+               BOOL (Rs_secondaryScreen, "secondaryScreen", "ssc", Opt_secondaryScreen, 0, "enable secondary screen"),
+               BOOL (Rs_secondaryScroll, "secondaryScroll", "ssr", Opt_secondaryScroll, 0, "enable secondary screen scroll"),
+-#endif
+ #if ENABLE_PERL
+               RSTRG (Rs_perl_lib, "perl-lib", "string"), //, "colon-separated directories with extension scripts"),TODO
+               RSTRG (Rs_perl_eval, "perl-eval", "perl-eval"), // "string", "code to be evaluated after all extensions have been loaded"),TODO
+-- 
+2.23.0
+
