@@ -1,0 +1,3 @@
+\- add X option to disable mouse reporting, or to make it only happen when "shift" is pressed (opposite to current behavior)
+
+    - figure out how to give mouseOnShift X resource a "true" default
