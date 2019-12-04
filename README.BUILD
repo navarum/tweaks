@@ -1,3 +1,7 @@
+Each project subdirectory has a BUILD script which can be used to
+configure and install it. Or use ./examples/install-tweaks to install
+all projects.
+
 Usage:
 
 ./BUILD clone
