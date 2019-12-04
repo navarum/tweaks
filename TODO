@@ -6,3 +6,5 @@
   html". something that works on github, and doesn't require
   javascript, and doesn't require committing generated files to the
   main branch...
+
+- clean up stderr output of build
