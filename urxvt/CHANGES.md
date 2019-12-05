@@ -8,6 +8,8 @@ Currently this configures and installs the latest version of URxvt, but with the
 
 * Remove certain sequences from the `terminfo` file, relating to the above changes.
 
+  Note that the terminfo changes and the configuration / code changes above are both helpful for eliminating problem behavior. For example, if I login to a remote host with the unmodified rxvt-unicode terminfo database, then it is helpful for the terminal emulator which I am running locally to ignore `rmcup` and `cvvis` commands. However, if there is an additional terminal emulator, such as mosh, between me and the app, then it might interpret "\E[r" (CSI_72, part of `rmcup`) coming from the app, and change it to something else. But if I copy my modified terminfo to the remote host, then the app will not even send "\E[r".
+
 * Add my url-mode-select script. To use it, put something like this in `~/.Xdefaults`:
 
       URxvt.perl-ext-common: ...,url-mode-select,...
@@ -24,6 +26,3 @@ Currently this configures and installs the latest version of URxvt, but with the
   Hence when you "select" a link, instead of "launching" a browser, it just gets copied to the clipboard. Another keybinding (via [xbindkeys](https://wiki.archlinux.org/index.php/Xbindkeys)) launches the browser from the clipboard. The cost is an extra keystroke to open a URL; but the benefit is that I can change the second keystroke from "open a browser" to "open in gedit" or "yank (into Emacs)" or anything else that might conceivably take input from the clipboard - so it is considerably more flexible than setting "launcher" to a browser.
 
 This is based on rxvt-unicode 9.22, as the latest release had problems with "eval:" appearing in `~/.Xdefaults` keybindings.
-
-Note that the terminfo changes and the configuration / code changes above are both helpful for eliminating problem behavior. For example, if I login to a remote host with the unmodified rxvt-unicode terminfo database, then it is helpful for the terminal emulator which I am running locally to ignore `rmcup` and `cvvis` commands. However, if there is an additional terminal emulator, such as mosh, between me and the app, then it might interpret "\E[r" (CSI_72, part of `rmcup`) coming from the app, and change it to something else. But if I copy my modified terminfo to the remote host, then the app will not even send "\E[r".
-
