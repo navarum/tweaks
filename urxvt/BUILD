@@ -39,7 +39,8 @@ do_configure () {
         --disable-text-blink \
         --enable-unicode3 \
         --disable-frills \
-        --disable-swapscreen
+        --disable-swapscreen \
+        --disable-fading
 }
 
 . $scriptdir/../lib/build-common.sh
