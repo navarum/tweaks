@@ -11,7 +11,7 @@ else
 fi
 export PREFIX=$HOME/.local
 FAILED=""
-for pkg in screen pulseaudio urxvt; do
+for pkg in screen pulseaudio urxvt unison; do
     ./$pkg/BUILD install || FAILED="$FAILED $pkg"
 done
 
