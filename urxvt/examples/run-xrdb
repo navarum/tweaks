@@ -1,0 +1,4 @@
+#!/bin/sh
+
+xrdb ~/.Xdefaults
+xrdb-urxvt-fonts

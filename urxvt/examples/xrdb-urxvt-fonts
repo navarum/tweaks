@@ -1,0 +1,50 @@
+#!/bin/zsh
+
+# This command sets up fonts in urxvt using xrdb
+
+# It sets a default normal and bold font, and it binds keys C-M-0 thru
+# 9 to different sizes of this font. When any of these key
+# combinations is pressed, the default for future urxvt windows is
+# also changed via xrdb. To configure fonts, edit the next section:
+
+################################################################
+
+DEFAULTSIZE=32
+
+font_sizes () {
+    SIZE=$1
+    if [[ $SIZE -eq 36 ]]; then
+        FONT='xft:DejaVu Sans Mono:pixelsize=36'
+        BOLD=$FONT
+    else
+        FONT="*terminus-bold-r-normal--$SIZE*"
+        BOLD="*terminus-medium-r-normal--$SIZE*"
+    fi
+}
+
+################################################################
+
+size_cmd () {
+    font_sizes $1
+    COMMAND='\033]50;'$FONT'\007\033]711;'$BOLD'\007'
+    echo -E "eval:system(qq{echo 'URxvt*font: $FONT' '\\\\n' 'URxvt*boldFont: $BOLD' | xrdb -merge}); \$self->cmd_parse(q{$COMMAND})"
+}
+
+font_sizes $DEFAULTSIZE
+
+if [[ -z $JUSTPRINT ]]; then
+    exec > >(xrdb -merge)
+fi
+
+# cat <<EOF
+# URxvt*font: $FONT
+# URxvt*boldFont: $BOLD
+# EOF
+
+# we have room for another size but terminus only features 9... :(
+SIZES=(12 14 16 18 20 22 24 28 32 36)
+i=0
+for s in $SIZES; do
+    (( i= ($i+1) % 10));
+    echo -E 'URxvt*keysym*M-C-'$i: $(size_cmd $s);
+done
