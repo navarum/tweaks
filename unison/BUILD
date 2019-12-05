@@ -23,7 +23,10 @@ do_configure () {
 }
 
 do_build () {
-    (cd $OCAMLDIR && make world && make install)
+    (cd $OCAMLDIR &&
+         #make world &&
+         make --debug=v world.opt &&
+         make install)
     # use the ocaml binaries we just built
     export PATH=$PREFIX/bin:$PATH
     # build unison
