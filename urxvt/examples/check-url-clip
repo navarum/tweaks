@@ -2,18 +2,10 @@
 
 HCLIP=$(xsel -bo | head -n 4)
 
-#: ${MSGCMD:=my-message}
-
 error () {
-    #    $MSGCMD "Doesn't look like a URL or a file:"${1:+" ($1)"}"\n$HCLIP";
     zenity --question --text "Doesn't look like a URL or a file:\n$HCLIP" \
          --ok-label "Proceed Anyway" --cancel-label "Cancel" \
          --width 640
-    # zenity --question --text "Doesn't look like a URL or a file:\n$HCLIP" \
-    #      --ok-label "Cancel" --cancel-label "Proceed Anyway" \
-    #      --width 640
-    # XXX fixme, when user closes window
-    # exit $(( ! $? ))
     exit $?
 }
 
