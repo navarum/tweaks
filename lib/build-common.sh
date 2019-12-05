@@ -170,9 +170,20 @@ configure () {
     touch .configured
 }
 
+default_build () {
+    make -C $srcpath -j8
+}
+
 build () {
     configure
-    make -C $srcpath -j8
+    # XXX maybe better to use the subproject build system to check if
+    # built?
+    # if [ -f .built ]; then
+    #     warn "Already built, delete .built to regenerate"
+    #     return 0;
+    # fi
+    run_if_exists do_build default_build
+    # touch .built
 }
 
 default_install () {

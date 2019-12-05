@@ -11,13 +11,21 @@ else
 fi
 export PREFIX=$HOME/.local
 FAILED=""
-for pkg in screen pulseaudio urxvt; do
+if [ $# -gt 0 ]; then
+    TARGETS="$@"
+else
+    TARGETS="screen pulseaudio urxvt unison"
+fi
+for pkg in $TARGETS; do
     ./$pkg/BUILD install || FAILED="$FAILED $pkg"
 done
 
-if [ -z $FAILED ]; then
+if [ -n "$FAILED" ]; then
     echo "The following packages failed to install: $FAILED"
+    echo "Rerun with:"
+    echo "$0 $FAILED"
     exit 1
 else
-    echo "All packages succeeded"
+    echo "All packages succeeded:"
+    echo $TARGETS
 fi

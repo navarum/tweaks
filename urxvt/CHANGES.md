@@ -17,7 +17,7 @@ Currently this configures and installs URxvt version 9.22, from May 2016 (the la
       URxvt.url-mode-select.launcher: clipboard-fake-launcher
       URxvt.url-mode-select.underline: false
 
-  It is based on Bert Muennich's "`url-select`". My modification was to add "modes" to it, so for example one could alternate between selecting "URLs", "lines of text", "file names", "stuff entered at command prompts", and so on. It uses an additional configuration file `url-mode-patterns.pl`, which can go in `~/.urxvt/` (if you don't like the default). In the above configuration, `clipboard-fake-launcher` is a custom script which just copies its argument to the clipboard.
+  It is based on Bert Muennich's "`url-select`". My modification was to add "modes" to it, so for example one could alternate between selecting "URLs", "lines of text", "file names", "stuff entered at command prompts", and so on. Unlike other URL modes, it detects wrapped URLs, even in Emacs (with the line-continuation backslash appearing in the final column). It uses an additional configuration file `url-mode-patterns.pl`, which can go in `~/.urxvt/` (if you don't like the default). In the above configuration, `clipboard-fake-launcher` is a custom script which just copies its argument to the clipboard.
 
       $ cat =clipboard-fake-launcher
       #!/bin/sh
