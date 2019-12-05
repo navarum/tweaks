@@ -1,0 +1,14 @@
+#!/bin/sh
+# Helper for urxvtc - "keep open" version of "urxvtc -e". Normally
+# 'urxvtc -e cmd' exits as soon as it finishes contacting the daemon
+# (urxvtd). This script keeps it open until cmd exits. Thanks to Marc
+# Lehmann.
+
+PID=$$
+
+trap "exit" USR1
+
+urxvtc -e sh -c '"$@"; kill -USR1 '$PID x "$@"
+
+while :; do wait; done
+
