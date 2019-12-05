@@ -1,0 +1,56 @@
+From 706bc4c0aedea4fe28365927f5b3c752a52f30bd Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Wed, 16 Oct 2019 21:43:56 -0700
+Subject: [PATCH 6/6] Debugging for mouseOnShift patch
+
+---
+ src/command.C | 5 +++++
+ src/screen.C  | 2 ++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/src/command.C b/src/command.C
+index 5948c6bf..08782937 100644
+--- a/src/command.C
++++ b/src/command.C
+@@ -1918,6 +1918,10 @@ rxvt_term::button_press (XButtonEvent &ev)
+   if (!bypass_keystate)
+     reportmode = !! (priv_modes & PrivMode_mouse_report);
+ 
++  rxvt_warn("button_press: reportmode: %d, ev.state: %d, ShiftMask=%d, "
++            "mouseOnShift: %d, bypass_keystate: %d\n",
++            reportmode, ev.state, ShiftMask, option (Opt_mouseOnShift),
++            bypass_keystate);
+   /*
+    * VT window processing of button press
+    */
+@@ -2238,6 +2242,7 @@ rxvt_term::button_release (XButtonEvent &ev)
+ 
+               dirn = ev.button == Button4 ? UP : DN;
+ 
++              rxvt_warn("Button45: %d\n", ev.state);
+               if (ev.state & ShiftMask)
+                 lines = 1;
+               else if (option (Opt_mouseWheelScrollPage))
+diff --git a/src/screen.C b/src/screen.C
+index 9eb375ac..3ec702f2 100644
+--- a/src/screen.C
++++ b/src/screen.C
+@@ -2751,6 +2751,7 @@ rxvt_term::selection_request (Time tm, int selnum) NOTHROW
+ void
+ rxvt_term::selection_clear (bool clipboard) NOTHROW
+ {
++      rxvt_warn("selection_clear %d\n", clipboard);
+   if (!clipboard)
+     {
+       want_refresh = 1;
+@@ -2785,6 +2786,7 @@ rxvt_term::selection_make (Time tm)
+   wchar_t *new_selection_text;
+   text_t *t;
+ 
++      rxvt_warn("selection_make %d\n", selection.op);
+   switch (selection.op)
+     {
+       case SELECTION_CONT:
+-- 
+2.23.0
+

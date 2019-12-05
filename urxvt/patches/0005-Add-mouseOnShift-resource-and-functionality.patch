@@ -1,0 +1,122 @@
+From 54ee9203a6fed0f56f3718036a9b42557e2ff151 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Wed, 16 Oct 2019 21:30:01 -0700
+Subject: [PATCH 5/6] Add "mouseOnShift" resource and functionality
+
+Setting "URxvt*mouseOnShift: true" activates a new behavior where the mouse is not reported to the client by default, but only when the shift key is held down. This is the reverse of the default behavior.
+---
+ doc/rxvt.1.man.in |  3 +++
+ doc/rxvt.1.pod    |  4 ++++
+ src/command.C     | 21 +++++++++++++++++++--
+ src/optinc.h      |  1 +
+ src/rsinc.h       |  1 +
+ src/xdefaults.C   |  1 +
+ 6 files changed, 29 insertions(+), 2 deletions(-)
+
+diff --git a/doc/rxvt.1.man.in b/doc/rxvt.1.man.in
+index 1f285e54..a1bdd626 100644
+--- a/doc/rxvt.1.man.in
++++ b/doc/rxvt.1.man.in
+@@ -942,6 +942,9 @@ handle Meta (Alt) + keypress as an escape prefix [default].
+ .IX Item "mouseWheelScrollPage: boolean"
+ \&\fBTrue\fR: the mouse wheel scrolls a page full. \fBFalse\fR: the mouse wheel
+ scrolls five lines [default].
++.IP "\fBmouseOnShift:\fR \fIboolean\fR" 4
++.IX Item "mouseOnShift: boolean"
++\&\fBTrue\fR: only send mouse events to application when Shift is held down. \fBFalse\fR: always send mouse events to application unless Shift or Meta is held down [default].
+ .IP "\fBpastableTabs:\fR \fIboolean\fR" 4
+ .IX Item "pastableTabs: boolean"
+ \&\fBTrue\fR: store tabs as wide characters. \fBFalse\fR: interpret tabs as cursor
+diff --git a/doc/rxvt.1.pod b/doc/rxvt.1.pod
+index 19317ef0..bcd91fa5 100644
+--- a/doc/rxvt.1.pod
++++ b/doc/rxvt.1.pod
+@@ -917,6 +917,10 @@ handle Meta (Alt) + keypress as an escape prefix [default].
+ B<True>: the mouse wheel scrolls a page full. B<False>: the mouse wheel
+ scrolls five lines [default].
+ 
++=item B<mouseOnShift:> I<boolean>
++
++B<True>: only send mouse events to application when Shift is held down. B<False>: always send mouse events to application, unless Shift or Meta is held down [default].
++
+ =item B<pastableTabs:> I<boolean>
+ 
+ B<True>: store tabs as wide characters. B<False>: interpret tabs as cursor
+diff --git a/src/command.C b/src/command.C
+index bc5f3e64..5948c6bf 100644
+--- a/src/command.C
++++ b/src/command.C
+@@ -1896,7 +1896,24 @@ rxvt_term::button_press (XButtonEvent &ev)
+ {
+   int reportmode = 0, clickintime;
+ 
+-  bypass_keystate = ev.state & (ModMetaMask | ShiftMask);
++  // NE 16 Oct 2019 when Opt_mouseOnShift is set, then we *only*
++  // interpret mouse events when the shift key is held down (the
++  // default is the opposite)
++  if(option (Opt_mouseOnShift)) {
++      // always bypass mouse reporting if selection is active
++      int has_sel = selection.clicks>0 && selection.clicks<4;
++      bypass_keystate = has_sel || !(ev.state & ShiftMask);
++      if(!bypass_keystate) { // not bypassing
++          // pretend like shift wasn't held down
++          ev.state &= ~ShiftMask;
++          // scroll wheel buttons change when shift is held, so change
++          // them back
++          if(ev.button == 6) ev.button=4;
++          if(ev.button == 7) ev.button=5;
++      }
++  } else {
++      bypass_keystate = ev.state & ShiftMask;
++  }
+ 
+   if (!bypass_keystate)
+     reportmode = !! (priv_modes & PrivMode_mouse_report);
+@@ -1972,7 +1989,7 @@ rxvt_term::button_press (XButtonEvent &ev)
+ #endif
+ 
+                 /* allow shift+left click to extend selection */
+-                if (ev.state & ShiftMask && !(priv_modes & PrivMode_mouse_report))
++                if (ev.state & ShiftMask && !reportmode)
+                   {
+                     if (MEvent.button == Button1 && clickintime)
+                       selection_rotate (ev.x, ev.y);
+diff --git a/src/optinc.h b/src/optinc.h
+index 09f9a26a..8f2815d3 100644
+--- a/src/optinc.h
++++ b/src/optinc.h
+@@ -19,6 +19,7 @@
+  def(jumpScroll)
+  def(skipScroll)
+  def(mouseWheelScrollPage)
++ def(mouseOnShift)
+ #if POINTER_BLANK
+  def(pointerBlank)
+ #else
+diff --git a/src/rsinc.h b/src/rsinc.h
+index 3460e8e3..5bd85fdf 100644
+--- a/src/rsinc.h
++++ b/src/rsinc.h
+@@ -43,6 +43,7 @@
+ #ifdef META8_OPTION
+   def (meta8)
+ #endif
++  def (mouseOnShift)
+ #ifdef MOUSE_WHEEL
+   def (mouseWheelScrollPage)
+ #endif
+diff --git a/src/xdefaults.C b/src/xdefaults.C
+index d0553c95..770ac2a9 100644
+--- a/src/xdefaults.C
++++ b/src/xdefaults.C
+@@ -139,6 +139,7 @@ optList[] = {
+ #ifdef META8_OPTION
+               BOOL (Rs_meta8, "meta8", NULL, Opt_meta8, 0, NULL),
+ #endif
++              BOOL (Rs_mouseOnShift, "mouseOnShift", NULL, Opt_mouseOnShift, 0, NULL),
+ #ifdef MOUSE_WHEEL
+               BOOL (Rs_mouseWheelScrollPage, "mouseWheelScrollPage", NULL, Opt_mouseWheelScrollPage, 0, NULL),
+ #endif
+-- 
+2.23.0
+

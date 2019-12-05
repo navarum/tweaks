@@ -1,2 +1,10 @@
 - put something in build-common.sh to automate recreating patches
   directory
+
+- need a better way to present the patches I made to each project, so
+  they can be reviewed in the browser, like "patches directory ->
+  html". something that works on github, and doesn't require
+  javascript, and doesn't require committing generated files to the
+  main branch...
+
+- clean up stderr output of build
