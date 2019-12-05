@@ -170,9 +170,13 @@ configure () {
     touch .configured
 }
 
+default_build () {
+    make -C $srcpath -j8
+}
+
 build () {
     configure
-    make -C $srcpath -j8
+    run_if_exists do_build default_build
 }
 
 default_install () {
