@@ -1,6 +1,6 @@
 ## Changes to [URxvt (rxvt-unicode)](http://software.schmorp.de/pkg/rxvt-unicode.html)
 
-Currently this configures and installs the latest version of URxvt, but with the following changes:
+Currently this configures and installs URxvt version 9.22, from May 2016 (the latest release had problems when "eval:" appears in `~/.Xdefaults` keybindings). It also includes the following changes:
 
 * Restore user's ability to disable blinking cursor via `~/.Xdefaults` (from commit 0fcacfc153674a124d59cc2445a0048d4ccc3501, 2014)
 
@@ -24,5 +24,3 @@ Currently this configures and installs the latest version of URxvt, but with the
       printf %s "$1" | xclip -i -selection clipboard
 
   Hence when you "select" a link, instead of "launching" a browser, it just gets copied to the clipboard. Another keybinding (via [xbindkeys](https://wiki.archlinux.org/index.php/Xbindkeys)) launches the browser from the clipboard. The cost is an extra keystroke to open a URL; but the benefit is that I can change the second keystroke from "open a browser" to "open in gedit" or "yank (into Emacs)" or anything else that might conceivably take input from the clipboard - so it is considerably more flexible than setting "launcher" to a browser.
-
-This is based on rxvt-unicode 9.22, as the latest release had problems with "eval:" appearing in `~/.Xdefaults` keybindings.
