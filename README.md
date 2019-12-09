@@ -6,7 +6,7 @@ Build scripts and patch series for software I use a lot. These are customization
     cd tweaks.navarum
     PREFIX=$HOME/.local ./screen/BUILD install
 
-(see `examples/install-tweaks`)
+(also see [examples/install-tweaks](examples/install-tweaks))
 
 Packages:
 
