@@ -13,9 +13,11 @@ configpath=
 OCAMLDIR=ocaml-4.08.1
 
 post_clone_hook () {
-    wget -c 'https://caml.inria.fr/distrib/ocaml-4.08/'$OCAMLDIR.tar.xz
+#    wget -c 'https://caml.inria.fr/distrib/ocaml-4.08/'$OCAMLDIR.tar.xz
+    # fetch our own backup copy of the OCaml sources, for when
+    # caml.inria.fr is broken (10 Dec 2019)
+    wget -c 'https://github.com/navarum/archive/blob/master/ocaml-4.08.1.tar.xz?raw=true' -O ocaml-4.08.1.tar.xz
     tar -xf $OCAMLDIR.tar.xz
-#    cd $OCAMLDIR
 }
 
 do_configure () {
