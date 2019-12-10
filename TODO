@@ -10,3 +10,5 @@
   main branch...
 
 - clean up stderr output of build
+
+- include old, better version of Perl CGI
