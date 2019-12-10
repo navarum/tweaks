@@ -3,3 +3,7 @@ For a list of improvements that could be made here, please see:
 https://gist.github.com/70dfb7ff01d86fd8f300
 
 https://webdav.seas.upenn.edu/viewvc/unison/trunk/src/TODO.txt?revision=506&view=markup
+
+----------------
+
+- Someday we may want to install OCaml in a temporary location and just use it for the Unison build, rather than installing both in e.g. ~/.local/
