@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# build depends:
+# perl-xml-parser libltdl-dev libcap-dev libsndfile1-dev libudev-dev speex autopoint
+# ...
+
 scriptdir="$(cd $(dirname $0) && pwd)"
 set -e
 
