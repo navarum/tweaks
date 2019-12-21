@@ -1,7 +1,7 @@
-From 8f131c4edf848b1ca2da81e3d03f07f84c48bbe6 Mon Sep 17 00:00:00 2001
+From 4afacf97a246759fca774aed8cd781d4ed7df4ec Mon Sep 17 00:00:00 2001
 From: Navarum <48705414+navarum@users.noreply.github.com>
 Date: Wed, 9 Oct 2019 13:08:23 -0700
-Subject: [PATCH 2/4] Make a note of configure flags
+Subject: [PATCH 2/5] Make a note of configure flags
 
 ---
  configure.ac | 5 +++++
@@ -24,5 +24,5 @@ index 0da3b596..bd6fa168 100644
  
  dnl RXVT version
 -- 
-2.23.0
+2.24.0
 

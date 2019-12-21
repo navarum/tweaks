@@ -1,7 +1,7 @@
-From 54ee9203a6fed0f56f3718036a9b42557e2ff151 Mon Sep 17 00:00:00 2001
+From a8ab2d56c511b27ab698c510f9e3b950708ee2ff Mon Sep 17 00:00:00 2001
 From: Navarum <48705414+navarum@users.noreply.github.com>
 Date: Wed, 16 Oct 2019 21:30:01 -0700
-Subject: [PATCH 5/6] Add "mouseOnShift" resource and functionality
+Subject: [PATCH 5/5] Add "mouseOnShift" resource and functionality
 
 Setting "URxvt*mouseOnShift: true" activates a new behavior where the mouse is not reported to the client by default, but only when the shift key is held down. This is the reverse of the default behavior.
 ---
@@ -118,5 +118,5 @@ index d0553c95..770ac2a9 100644
                BOOL (Rs_mouseWheelScrollPage, "mouseWheelScrollPage", NULL, Opt_mouseWheelScrollPage, 0, NULL),
  #endif
 -- 
-2.23.0
+2.24.0
 

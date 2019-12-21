@@ -1,39 +1,36 @@
-From bf3fbe10ea7adee8ff8f2394191ea9721807b700 Mon Sep 17 00:00:00 2001
+From 50404594836f32a8af53c52c962c01c64c893a76 Mon Sep 17 00:00:00 2001
 From: Navarum <48705414+navarum@users.noreply.github.com>
 Date: Fri, 11 Oct 2019 10:35:08 -0700
-Subject: [PATCH 3/4] Disable problematic sequences in terminfo
+Subject: [PATCH 3/5] Disable problematic sequences in terminfo
 
 ---
- doc/etc/rxvt-unicode.terminfo | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ doc/etc/rxvt-unicode.terminfo | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/doc/etc/rxvt-unicode.terminfo b/doc/etc/rxvt-unicode.terminfo
-index 35a0a3c2..f0e9e981 100644
+index 35a0a3c2..540c2a1e 100644
 --- a/doc/etc/rxvt-unicode.terminfo
 +++ b/doc/etc/rxvt-unicode.terminfo
-@@ -22,7 +22,8 @@ rxvt-unicode|rxvt-unicode terminal (X Window System),
+@@ -22,7 +22,7 @@ rxvt-unicode|rxvt-unicode terminal (X Window System),
  	clear=\E[H\E[2J,
  	civis=\E[?25l,
  	cnorm=\E[?12l\E[?25h,
 -	cvvis=\E[?12;25h,
-+    # cvvis=\E[?12;25h,
 +    cvvis=,
  	cr=^M,
  	csr=\E[%i%p1%d;%p2%dr,
  	cub=\E[%p1%dD,
-@@ -160,8 +161,10 @@ rxvt-unicode|rxvt-unicode terminal (X Window System),
+@@ -160,8 +160,8 @@ rxvt-unicode|rxvt-unicode terminal (X Window System),
  	rmam=\E[?7l,
  	smir=\E[4h,
  	rmir=\E[4l,
 -	smcup=\E[?1049h,
 -	rmcup=\E[r\E[?1049l,
-+    # smcup=\E[?1049h,
-+    # rmcup=\E[r\E[?1049l,
 +	smcup=,
 +	rmcup=,
  	smkx=\E=,
  	rmkx=\E>,
  	indn=\E[%p1%dS,
 -- 
-2.23.0
+2.24.0
 
