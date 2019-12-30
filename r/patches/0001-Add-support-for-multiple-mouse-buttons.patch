@@ -1,0 +1,81 @@
+From 0b5da8113393ef1b645f509203e9caef65da1380 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Mon, 30 Dec 2019 05:15:17 -0800
+Subject: [PATCH] Add support for multiple mouse buttons
+
+---
+ src/include/R_ext/GraphicsDevice.h |  1 +
+ src/main/gevents.c                 | 31 ++++++++++++++++++++++--------
+ 2 files changed, 24 insertions(+), 8 deletions(-)
+
+diff --git a/src/include/R_ext/GraphicsDevice.h b/src/include/R_ext/GraphicsDevice.h
+index d2604daf98..dbc0e2ad17 100644
+--- a/src/include/R_ext/GraphicsDevice.h
++++ b/src/include/R_ext/GraphicsDevice.h
+@@ -819,6 +819,7 @@ typedef enum {meMouseDown = 0,
+ 	      meMouseUp,
+ 	      meMouseMove} R_MouseEvent;
+ 
++#define mouseButtonMax 24
+ #define leftButton   1
+ #define middleButton 2
+ #define rightButton  4
+diff --git a/src/main/gevents.c b/src/main/gevents.c
+index 8781e8ef17..1653e86697 100644
+--- a/src/main/gevents.c
++++ b/src/main/gevents.c
+@@ -208,11 +208,12 @@ do_getGraphicsEvent(SEXP call, SEXP op, SEXP args, SEXP env)
+     return(result);
+ }
+ 
++
+ /* used in devWindows.c and cairoDevice */
+ void doMouseEvent(pDevDesc dd, R_MouseEvent event,
+ 		  int buttons, double x, double y)
+ {
+-    int i;
++    int i, j;
+     SEXP handler, bvec, sx, sy, temp, result;
+ 
+     dd->gettingEvent = FALSE; /* avoid recursive calls */
+@@ -226,16 +227,30 @@ void doMouseEvent(pDevDesc dd, R_MouseEvent event,
+     if (TYPEOF(handler) == CLOSXP) {
+ 	SEXP s_which = install("which");
+ 	defineVar(s_which, ScalarInteger(ndevNumber(dd)+1), dd->eventEnv);
+-	// Be portable: see PR#15793
+-	int len = ((buttons & leftButton) != 0)
+-	  + ((buttons & middleButton) != 0)
+-	  + ((buttons & rightButton) != 0);
++    int len;
++    if(1) {
++		    /* RButtons = 1 << (event.xbutton.button - 1); */
++        len = 0;
++        for(j=0; j<mouseButtonMax; j++)
++            len += ((buttons & (1 << j)) != 0);
++    } else {
++        // Be portable: see PR#15793
++        len = ((buttons & leftButton) != 0)
++            + ((buttons & middleButton) != 0)
++            + ((buttons & rightButton) != 0);
++    }
+ 
+ 	PROTECT(bvec = allocVector(INTSXP, len));
+ 	i = 0;
+-	if (buttons & leftButton) INTEGER(bvec)[i++] = 0;
+-	if (buttons & middleButton) INTEGER(bvec)[i++] = 1;
+-	if (buttons & rightButton) INTEGER(bvec)[i++] = 2;
++    if(1) {
++        for(j=0; j<mouseButtonMax; j++)
++            if(buttons & (1 << j))
++                INTEGER(bvec)[i++] = j;
++    } else {
++        if (buttons & leftButton) INTEGER(bvec)[i++] = 0;
++        if (buttons & middleButton) INTEGER(bvec)[i++] = 1;
++        if (buttons & rightButton) INTEGER(bvec)[i++] = 2;
++    }
+ 
+ 	PROTECT(sx = ScalarReal( (x - dd->left) / (dd->right - dd->left) ));
+ 	PROTECT(sy = ScalarReal((y - dd->bottom) / (dd->top - dd->bottom) ));
+-- 
+2.24.1
+
