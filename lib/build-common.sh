@@ -107,6 +107,7 @@ apply () {
         fi
     fi
 
+    warn "Running git checkout -q $patchbase -f"
     git checkout -q $patchbase -f
 
     run_if_exists pre_tag_hook
