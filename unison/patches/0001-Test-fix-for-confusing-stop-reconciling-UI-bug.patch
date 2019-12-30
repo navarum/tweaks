@@ -1,0 +1,60 @@
+From a3eea71260c53719c91ecef8de933bd7175e14f7 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Mon, 30 Dec 2019 04:20:41 -0800
+Subject: [PATCH 1/2] Test fix for confusing 'stop reconciling' UI bug
+
+---
+ src/uitext.ml | 25 ++++++++++++++++++++++---
+ 1 file changed, 22 insertions(+), 3 deletions(-)
+
+diff --git a/src/uitext.ml b/src/uitext.ml
+index 72ef5dd..46ef471 100644
+--- a/src/uitext.ml
++++ b/src/uitext.ml
+@@ -245,6 +245,7 @@ let displayri ri =
+ type proceed = ConfirmBeforeProceeding | ProceedImmediately
+ 
+ (* "interact [] rilist" interactively reconciles each list item *)
++(* "ri" stands for "reconciliation item"? *)
+ let interact prilist rilist =
+   if not (Prefs.read Globals.batch) then display ("\n" ^ Uicommon.roots2string() ^ "\n");
+   let (r1,r2) = Globals.roots() in
+@@ -607,14 +608,32 @@ let interact prilist rilist =
+                   (fun () -> newLine();
+                      ignore (Uicommon.ignoreName ri.path1) rest
+                        "files with this name"));
++(* NE 30 Dec 2019 Always found "s" and "g" confusing. Previous
++  behavior was for both to proceed as in batch mode, which was not
++  clear from the help text and caused me unintended data loss.
++
++  For the default where files are displayed in alphabetical order,
++  it's not clear who would want to use either option, as it would mean
++  manually selecting merge directions for only files in the first part
++  of the alphabet. Presumably these options were meant to be used
++  after entering something like "%" to select different defaults,
++  however at least in Unison 2.40.61 there was "g" but no "%". Users
++  could however list remaining "suggested changes" with "L" or "l" at
++  this time.
++
++  This patch changes the behavior of "s" to actually skip all the
++  remaining files, and preserves the behavior of "g" but giving it a
++  hopefully clearer description and requiring confirmation.
++*)
+                  (["s"],
+-                  ("stop reconciling and go to the proceed menu"),
++                  ("skip remaining files, while propagating already selected changes"),
+                   (fun () -> newLine();
++                     Safelist.iter (fun ri -> setskip ri; ()) ril;
+                      (ConfirmBeforeProceeding, Safelist.rev_append prev ril)));
+                  (["g"],
+-                  ("proceed immediately to propagating changes"),
++                  ("go ahead with suggested changes and no more questions as in batch mode"),
+                   (fun () -> newLine();
+-                     (ProceedImmediately, Safelist.rev_append prev ril)));
++                     (ConfirmBeforeProceeding, Safelist.rev_append prev ril)));
+                  (["q"],
+                   ("exit " ^ Uutil.myName ^ " without propagating any changes"),
+                   (fun () -> newLine();
+-- 
+2.24.1
+

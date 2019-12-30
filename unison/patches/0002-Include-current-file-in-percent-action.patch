@@ -1,0 +1,37 @@
+From 3d61571d879f8b882fb0c559ab395f91faff9fec Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Mon, 30 Dec 2019 10:06:24 -0800
+Subject: [PATCH 2/2] Include current file in percent action
+
+---
+ src/uitext.ml | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/src/uitext.ml b/src/uitext.ml
+index 46ef471..73fe76e 100644
+--- a/src/uitext.ml
++++ b/src/uitext.ml
+@@ -580,10 +580,18 @@ let interact prilist rilist =
+                   ("skip (curr or match)"),
+                   (fun () ->
+                      actOnMatching setskip));
++(* NE 30 Dec 2019 This command "%" had been set up to skip just the
++   following files, while leaving the current file at the default
++   suggestion. So one would have to type "%" then "/" then "g". It
++   seems less awkward to have it simply apply to the current file as
++   well. Presumably similar changes should be made to other new "all
++   the following" options to be consistent - in other words this is a
++   work in progress.
++*)
+                  (["%"],
+-                  ("skip all the following"),
++                  ("skip this and all the following"),
+                   (fun () -> newLine();
+-                     Safelist.iter (fun ri -> setskip ri; ()) rest;
++                     Safelist.iter (fun ri -> setskip ri; ()) ril;
+                      repeat()));
+                  (["-"],
+                   ("skip and discard for this session (curr or match)"),
+-- 
+2.24.1
+
