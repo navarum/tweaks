@@ -14,6 +14,11 @@ browser () {
 warn () {
     echo tweaks: "$@" >&2
 }
+debug () {
+    if [[ "$DEBUG" -ne 0 ]]; then
+        echo tweaks: "$@" >&2
+    fi
+}
 
 cd $scriptdir
 
@@ -31,10 +36,10 @@ run_if_exists() {
     else
         FN1="$1"
         if test $FN1; then
-            warn no hook $FN, defaulting to $FN1
+            debug no hook $FN, defaulting to $FN1
             "$FN1" "$@";
         else
-            warn no hook $FN
+            debug no hook $FN
         fi
         return 0
     fi
@@ -97,7 +102,7 @@ apply () {
     if _ref -q $mybranch && _ref -q $mybranch-new; then
         if [[ "$(_ref $mybranch-new)" != "$(_ref $mybranch)" ]]; then
             warn "Error: Branch $mybranch-new doesn't match $mybranch"
-            warn "Do you have unexported changes?"
+            warn "Do you have unexported changes? (see BUILD-NOTES.md)"
             exit 1;
         fi
     fi
