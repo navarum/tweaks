@@ -4,7 +4,8 @@ scriptdir="$(cd $(dirname $0) && pwd)"
 set -e
 
 upstream=https://github.com/wch/r-source/
-patchbase=9a003136dfcc2c1fda29abe50565e301a814cf5c
+#patchbase=9a003136dfcc2c1fda29abe50565e301a814cf5c # this one disappeared!
+patchbase=a0b8a1a2ef04c15a5ca5e91525f7e5fa68540502
 #patchbase=HEAD # NE 30 Dec 2019 does this not work?
 srcdir=r-source
 srcpath=$srcdir
