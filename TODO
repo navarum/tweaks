@@ -1,3 +1,5 @@
+- is there a reason not to rewrite this in Zsh?
+
 - support "uninstall"
 
 - put something in build-common.sh to automate recreating patches
