@@ -4,6 +4,8 @@ https://gist.github.com/70dfb7ff01d86fd8f300
 
 https://webdav.seas.upenn.edu/viewvc/unison/trunk/src/TODO.txt?revision=506&view=markup
 
+- A possible improvement would be a way for Unison to allow users to preview/edit the list of changes in an editor, similar to "git rebase -i". The new options list has many features for manipulating the propagation settings, but sometimes an editor provides a more useful and convenient interface.
+
 ----------------
 
 - Someday we may want to install OCaml in a temporary location and just use it for the Unison build, rather than installing both in e.g. ~/.local/
