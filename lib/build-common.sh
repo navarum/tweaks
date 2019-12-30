@@ -2,7 +2,6 @@
 # in that file should be given defaults in this one, and
 # screen-specific elements of this file should be removed to that one
 
-builddir=build
 : ${PREFIX:=$HOME/navarum-testing}
 mybranch=navarum # should avoid conflicts
 gitusername='Navarum Eliskar'
@@ -170,8 +169,9 @@ configure () {
     touch .configured
 }
 
+: ${buildpath:=srcpath}
 default_build () {
-    make -C $srcpath -j8
+    make -C $buildpath -j8
 }
 
 build () {
@@ -187,7 +187,7 @@ build () {
 }
 
 default_install () {
-    make -C $srcpath install
+    make -C $buildpath install
 }
 
 install () {
