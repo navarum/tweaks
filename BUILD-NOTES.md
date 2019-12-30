@@ -97,4 +97,9 @@ references `mybase`, `navarum`, and `navarum-new`:
 
 If you were to commit some new changes and forget to export them (with
 `format-patch`), then `navarum-new` would point to `HEAD`, but
-`navarum` would be left behind.
+`navarum` would be left behind, leading to an error message when you
+try to reapply.
+
+To manually force a step to be repeated, remove the corresponding
+placeholder file in the project directory (`.cloned`, `.applied`,
+`.configured`, etc.).
