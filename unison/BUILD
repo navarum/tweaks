@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# NE 30 Dec 2019 this is a bit awkward since we need to build and
+# install OCaml in order to build Unison. This step is remembered by
+# touching ".built-ocaml". Note that $PREFIX needs to be set during
+# "build".
+
 scriptdir="$(cd $(dirname $0) && pwd)"
 set -e
 
@@ -21,7 +26,9 @@ post_clone_hook () {
 }
 
 do_configure () {
-    (cd ../$OCAMLDIR && ./configure -prefix $PREFIX)
+    if [ ! -f .built-ocaml ]; then
+        (cd ../$OCAMLDIR && ./configure -prefix $PREFIX)
+    fi
 }
 
 # note that we usually only need PREFIX for install, here we need it
