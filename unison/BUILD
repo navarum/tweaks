@@ -26,13 +26,21 @@ post_clone_hook () {
 }
 
 do_configure () {
-    if [ ! -f .built-ocaml ]; then
+    # Unison itself doesn't need to be configured. We have a separate
+    # ".configured-ocaml" file so that when patches are reapplied to
+    # Unison, OCaml doesn't have to be reconfigured/built.
+    if [ -f $scriptdir/.configured-ocaml ]; then
+        warn "Already configured OCaml, delete .configured-ocaml to regenerate"
+    else
+        warn "Configuring OCaml"
         (cd ../$OCAMLDIR && ./configure -prefix $PREFIX)
+        touch $scriptdir/.configured-ocaml
+        rm -f $scriptdir/.built-ocaml
     fi
 }
 
-# note that we usually only need PREFIX for install, here we need it
-# for build as well
+# Note that we usually only need PREFIX for install, here we need it
+# for build as well, because OCaml is installed before Unison is built
 do_build () {
     if [ -f .built-ocaml ]; then
         warn "Already built OCaml, delete .built-ocaml to regenerate"
