@@ -16,6 +16,10 @@ or just
 
 (which will pull in the other dependencies)
 
+To force a build step to be repeated, remove the corresponding
+placeholder file in the project directory (`.cloned`, `.applied`,
+`.configured`, etc.).
+
 ----------------
 
 * To edit the patch series:
@@ -62,8 +66,8 @@ or just
 
 The BUILD code is supposed to simple enough so that you can tell what
 it's doing to Git; I thought that depending on a patch series helper
-like `quilt` would make things unnecessarily complicated. The basics
-of the "apply" rule are
+like `quilt` would make things too complicated. The basics of the
+"apply" rule are
 
     cd $srcdir
     git tag mybase $patchbase
@@ -71,16 +75,18 @@ of the "apply" rule are
     git am ../patches/*.patch
     git checkout -b navarum-new
 
-The use of two branches `navarum` and `navarum-new` is so we can keep
-track of what was applied automatically, and what might have been
-added afterwards by the user (which we don't want to detach or
-overwrite by accident). The idea is that you run the command which was
-given above, `git branch -f navarum navarum-new`, only when you are
-sure that `../patches/` contains all your work on the local git
-repository. If the two branches point at different commits, the build
-scripts will refuse to apply the patches. After `./BUILD apply`, the
-output of `git log` will be something like this - showing the three
-references `mybase`, `navarum`, and `navarum-new`:
+The reason for using two branches `navarum` and `navarum-new` is so we
+can keep track of what was applied automatically, and what might have
+been added afterwards to the project Git repo by the user (which we
+don't want to detach or overwrite by accident). The idea is that you
+run the command which was given above, `git branch -f navarum
+navarum-new`, *only* when you are sure that `../patches/` contains all
+your work on the local git repository. If you commit some new changes
+to the project code, then the two branches point at different commits,
+and the build scripts will refuse to reapply the patches. After
+`./BUILD apply` or `git branch -f`, the output of `git log` will be
+something like this - showing the three references `mybase`,
+`navarum`, and `navarum-new`:
 
     commit ea4... (HEAD -> navarum-new, navarum)
     Author: Navarum <...>
@@ -93,13 +99,9 @@ references `mybase`, `navarum`, and `navarum-new`:
         Patch 1 description
     commit 302... (tag: mybase)
     Author: Upstream Maintainer <...>
-    ...
+        The last commit before our patches ($patchbase)
 
-If you were to commit some new changes and forget to export them (with
-`format-patch`), then `navarum-new` would point to `HEAD`, but
-`navarum` would be left behind, leading to an error message when you
-try to reapply.
-
-To manually force a step to be repeated, remove the corresponding
-placeholder file in the project directory (`.cloned`, `.applied`,
-`.configured`, etc.).
+With this workflow, which I hope is not too confusing, one has the
+choice of editing the patches `patches/*.patch` directly, or editing
+them in the project checkout using a tool like `git rebase -i` and
+then re-exporting to `../patches`.
