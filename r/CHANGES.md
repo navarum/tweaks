@@ -1,5 +1,7 @@
 ## Changes to [GNU R](https://www.r-project.org/)
 
+See the [patches directory](patches/). Includes:
+
 * Support for more than three mouse buttons (e.g. scroll wheel) in `getGraphicsEvent` (30 Dec 2019):
 
       > X11()
