@@ -10,5 +10,10 @@ trap "exit" USR1
 
 urxvtc -e sh -c '"$@"; kill -USR1 '$PID x "$@"
 
-while :; do wait; done
+while :; do
+    # NE 15 Jan 2020 what is the best way to do this? without the
+    # "sleep" it eats 100% CPU
+    sleep 10 &
+    wait;
+done
 
