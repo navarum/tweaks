@@ -48,7 +48,7 @@ index 72ef5dd..46ef471 100644
                       (ConfirmBeforeProceeding, Safelist.rev_append prev ril)));
                   (["g"],
 -                  ("proceed immediately to propagating changes"),
-+                  ("go ahead with suggested changes and no more questions as in batch mode"),
++                  ("go ahead with default recommendations for remaining files, as in batch mode"),
                    (fun () -> newLine();
 -                     (ProceedImmediately, Safelist.rev_append prev ril)));
 +                     (ConfirmBeforeProceeding, Safelist.rev_append prev ril)));
