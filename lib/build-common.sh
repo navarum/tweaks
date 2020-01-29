@@ -175,7 +175,7 @@ configure () {
     touch .configured
 }
 
-: ${buildpath:=srcpath}
+: ${buildpath:=$srcpath}
 default_build () {
     make -C $buildpath -j8
 }
