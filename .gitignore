@@ -3,4 +3,10 @@
 TAGS
 .applied
 .cloned
-.configured
+.configured*
+.built*
+*.git
+r-source
+ocaml-*
+
+
