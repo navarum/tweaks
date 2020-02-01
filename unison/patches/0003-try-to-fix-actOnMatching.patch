@@ -1,0 +1,30 @@
+From 2fae037e4ba22406fcfc7463372dcbf97f870cab Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 31 Jan 2020 20:17:49 -0800
+Subject: [PATCH 3/3] try to fix actOnMatching
+
+---
+ src/uitext.ml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/uitext.ml b/src/uitext.ml
+index 9fc384c..2e92ba4 100644
+--- a/src/uitext.ml
++++ b/src/uitext.ml
+@@ -374,11 +374,11 @@ let interact prilist rilist =
+                 if t && change then next() else repeat()
+               end else begin
+                 if change then newLine();
+-                loop prev rest
++                loop prev ril
+               end
+           | test::_ -> newLine();
+               let filt = fun ri -> if test ri then f ri || not discard else true in
+-              loop prev (ri::Safelist.filter filt rest)
++              loop prev (ri::Safelist.filter filt ril)
+         in
+         displayri ri;
+         match ri.replicas with
+-- 
+2.24.1
+
