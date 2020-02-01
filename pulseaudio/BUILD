@@ -29,6 +29,13 @@ pre_configure_hook () {
     ./autogen.sh
 }
 
+# XXX check this "BTW, you shoud add --enable-smoother-2 to the
+# configure options when using the all_patches branch"
+# do_configure () {
+#     ./configure "--prefix=$PREFIX"
+#         --enable-smoother-2
+# }
+
 do_install () {
     sudo make -C $srcpath install
 }
