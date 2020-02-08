@@ -9,7 +9,8 @@ scriptdir="$(cd $(dirname $0) && pwd)"
 set -e
 
 upstream=https://github.com/bcpierce00/unison.git
-patchbase=80133f36d670ed458a183857d98aa6bb19559b85
+#patchbase=80133f36d670ed458a183857d98aa6bb19559b85
+patchbase=26a29f79487484b7982c85e0dc879cf7aaaf584f
 srcdir=unison.git
 srcpath=$srcdir
 
