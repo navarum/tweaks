@@ -12,7 +12,7 @@ srcpath=$srcdir/src/
 
 pre_tag_hook () {
     # in $srcdir
-    (cd src && git rm --cached configure Makefile doc/screen.info-1 doc/screen.info-2 doc/screen.info doc/screen.info-4 doc/screen.info-5 doc/screen.info-3)
+    (cd src && git rm configure Makefile doc/screen.info-1 doc/screen.info-2 doc/screen.info doc/screen.info-4 doc/screen.info-5 doc/screen.info-3)
     git commit -m "Remove generated files" -a
 }
 
