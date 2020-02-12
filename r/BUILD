@@ -5,7 +5,9 @@ set -e
 
 upstream=https://github.com/wch/r-source/
 #patchbase=9a003136dfcc2c1fda29abe50565e301a814cf5c # this one disappeared!
-patchbase=a0b8a1a2ef04c15a5ca5e91525f7e5fa68540502
+#patchbase=a0b8a1a2ef04c15a5ca5e91525f7e5fa68540502
+patchbase=71c8050ba78632255d0dc85c8a448c4e26eaf9b2 # NE 12 Feb 2020
+
 # commit a0b8a1a2ef04c15a5ca5e91525f7e5fa68540502
 # Author: ripley <ripley@00db46b3-68df-0310-9c12-caf00c1e9a41>
 # Date:   Sat Dec 28 07:07:59 2019 +0000
