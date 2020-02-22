@@ -1,13 +1,22 @@
 #!/bin/bash
 
 # Symlink this script somewhere in your path
-# Usage: install-tweaks SUBPACKAGENAME
+# Usage: install-tweaks [-N] SUBPACKAGENAME
 
 # git clone https://github.com/navarum/tweaks tweaks.navarum
 # (or use a version you forked)
 # ./tweaks.navarum/examples/install-tweaks
 
-BASE=$(cd $(dirname $0) && pwd)
+while true; do
+    case $1 in
+        -N) nopull=1;;
+        -*) >&2 echo Unknown argument $1; exit 1;;
+        *) break;
+    esac
+    shift
+done
+
+BASE="$(cd $(dirname $(realpath $0)) && pwd)"
 echo BASE=$BASE
 if [[ $BASE != */examples ]]; then
     >&2 echo "$0: Couldn't find base directory"
@@ -18,7 +27,7 @@ set -e
 
 cd $BASE/../
 
-git pull
+[[ "$nopull" -ne 0 ]] || git pull
 
 # if [ -d tweaks.navarum ]; then
 #     cd tweaks.navarum
