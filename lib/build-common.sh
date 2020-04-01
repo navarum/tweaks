@@ -19,6 +19,20 @@ debug () {
         echo tweaks: "$@" >&2
     fi
 }
+die() {
+    local frame=1
+    while caller $frame; do
+        ((frame++));
+    done
+    echo "$*"
+    exit 1
+}
+check_pwd () {
+    if [[ "$PWD" != "$scriptdir" ]]; then
+        die Wrong pwd: $PWD
+        exit 1
+    fi
+}
 
 cd $scriptdir
 
@@ -46,12 +60,13 @@ run_if_exists() {
 }
 
 clone () {
+    check_pwd
     if [ ! -f .cloned ]; then
         git clone $upstream $srcdir
         # XXX does this make sense for others?
         (cd $srcdir &&
-             git config user.name $gitusername &&
-             git config user.email $gituseremail
+            git config user.name $gitusername &&
+            git config user.email $gituseremail
         )
         run_if_exists post_clone_hook
         touch .cloned
@@ -82,6 +97,7 @@ _all_older () {
 # git ls-tree -r --name-only HEAD | while read f; do date -r $f +%s; done
 
 apply () {
+    check_pwd
     clone
     if [ -f .applied ]; then
         printf "%s\0" patches/*.patches | (_all_older .applied)
@@ -91,9 +107,11 @@ apply () {
         else
             warn "Patches modified since last application, reapplying"
         fi
+    else
+        warn "Applying"
     fi
     cd $srcdir
-#    if [ "$(git diff-index HEAD | grep -v configure)" ]; then
+    #    if [ "$(git diff-index HEAD | grep -v configure)" ]; then
     if ! git diff-index --quiet HEAD --; then
         warn Working tree dirty, bailing
         exit 1
@@ -108,17 +126,21 @@ apply () {
     fi
 
     warn "Running git checkout -q $patchbase -f"
-    git checkout -q $patchbase -f
+
+    # if $patchbase empty we need to checkout master, so that deleting
+    # $mybranch succeeds later (fixes reapply issue in tetris)
+    git checkout -q ${patchbase:-master} -f
+#   git checkout -q $patchbase -f
 
     run_if_exists pre_tag_hook
 
-    git tag -d mybase || true
+    git tag -d mybase 2>/dev/null || true
     git tag mybase
 
     # these need to come after 'git checkout mybase', because git will
     # complain if the branch is checked out
-    git branch -D $mybranch || true
-    git branch -D $mybranch-new || true
+    git branch -D $mybranch 2>/dev/null || true
+    git branch -D $mybranch-new  2>/dev/null || true
 
     git checkout -b $mybranch
     shopt -s nullglob
@@ -162,6 +184,7 @@ default_configure () {
 
 # do the configuration. arguments are var=value, e.g. PREFIX=~/.local
 configure () {
+    check_pwd
     apply
     if [ -f .configured ]; then
         warn "Using old configuration; delete .configured to regenerate"
@@ -181,6 +204,7 @@ default_build () {
 }
 
 build () {
+    check_pwd
     configure
     # XXX maybe better to use the subproject build system to check if
     # built?
@@ -197,6 +221,11 @@ default_install () {
 }
 
 install () {
+    if [[ $# -gt 0 ]]; then
+        warn "Found arguments to 'install'; did you mean /usr/bin/install?"
+        exit 1
+    fi
+    check_pwd
     build
     run_if_exists do_install default_install
 }
