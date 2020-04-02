@@ -1,0 +1,349 @@
+From 2f48dce01c1996860c8d5aa6e815cb53aff06966 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Thu, 2 Apr 2020 09:10:17 -0700
+Subject: [PATCH 3/3] Keep track of statistics and print them during game
+
+---
+ exec.objs           |  2 +-
+ tetris/Makefile.bsd |  2 +-
+ tetris/input.c      | 13 ---------
+ tetris/input.h      | 23 +++++++++++++++
+ tetris/screen.c     | 13 +++------
+ tetris/screen.h     | 10 +++++++
+ tetris/stats.c      | 70 +++++++++++++++++++++++++++++++++++++++++++++
+ tetris/stats.h      | 13 +++++++++
+ tetris/tetris.c     | 19 ++++++++++--
+ 9 files changed, 138 insertions(+), 27 deletions(-)
+ create mode 100644 tetris/stats.c
+ create mode 100644 tetris/stats.h
+
+diff --git a/exec.objs b/exec.objs
+index f081d60..951078d 100644
+--- a/exec.objs
++++ b/exec.objs
+@@ -116,7 +116,7 @@ sail			assorted.o game.o globals.o dr_1.o dr_2.o dr_3.o \
+ 	lib/strlcpy.o
+ snake/snake/snake	snake.o
+ snake/snscore/snscore	snscore.o
+-tetris			input.o scores.o screen.o shapes.o tetris.o
++tetris			input.o scores.o screen.o shapes.o tetris.o stats.o
+ trek			abandon.o attack.o autover.o capture.o cgetc.o \
+ 	check_out.o checkcond.o compkl.o computer.o damage.o damaged.o \
+ 	dcrept.o destruct.o dock.o dumpgame.o dumpme.o dumpssradio.o events.o \
+diff --git a/tetris/Makefile.bsd b/tetris/Makefile.bsd
+index b3650e3..369ad93 100644
+--- a/tetris/Makefile.bsd
++++ b/tetris/Makefile.bsd
+@@ -2,7 +2,7 @@
+ #	@(#)Makefile	8.1 (Berkeley) 5/31/93
+ 
+ PROG=	tetris
+-SRCS=	input.c screen.c shapes.c scores.c tetris.c
++SRCS=	input.c screen.c shapes.c scores.c tetris.c stats.c
+ MAN=	tetris.6
+ DPADD=	${LIBTERM}
+ LDADD=	-ltermcap
+diff --git a/tetris/input.c b/tetris/input.c
+index 3171d50..ffed9a2 100644
+--- a/tetris/input.c
++++ b/tetris/input.c
+@@ -12,19 +12,6 @@
+ #include "input.h"
+ #include "tetris.h"
+ 
+-/* return true iff the given timeval is positive */
+-#define	TV_POS(tv) \
+-	((tv)->tv_sec > 0 || ((tv)->tv_sec == 0 && (tv)->tv_usec > 0))
+-
+-/* subtract timeval `sub' from `res' */
+-#define	TV_SUB(res, sub) \
+-	(res)->tv_sec -= (sub)->tv_sec; \
+-	(res)->tv_usec -= (sub)->tv_usec; \
+-	if ((res)->tv_usec < 0) { \
+-		(res)->tv_usec += 1000000; \
+-		(res)->tv_sec--; \
+-	}
+-
+ /*
+  * Do a `read wait': poll for reading from stdin, with timeout *tvp.
+  * On return, modify *tvp to reflect the amount of time spent waiting.
+diff --git a/tetris/input.h b/tetris/input.h
+index 3e54ddd..07dd475 100644
+--- a/tetris/input.h
++++ b/tetris/input.h
+@@ -1,3 +1,26 @@
+ int	rwait(struct timeval *);
+ int	tgetchar(void);
+ void	tsleep(void);
++
++/* return true iff the given timeval is positive */
++#define	TV_POS(tv) \
++	((tv)->tv_sec > 0 || ((tv)->tv_sec == 0 && (tv)->tv_usec > 0))
++
++/* subtract timeval `sub' from `res' */
++#define	TV_SUB(res, sub) \
++	(res)->tv_sec -= (sub)->tv_sec; \
++	(res)->tv_usec -= (sub)->tv_usec; \
++	if ((res)->tv_usec < 0) { \
++		(res)->tv_usec += 1000000; \
++		(res)->tv_sec--; \
++	}
++
++/* add timeval `sub' to `res' */
++#define	TV_ADD(res, sub) \
++	(res)->tv_sec += (sub)->tv_sec; \
++	(res)->tv_usec += (sub)->tv_usec; \
++	if ((res)->tv_usec >= 1000000) { \
++		(res)->tv_usec -= 1000000; \
++		(res)->tv_sec++; \
++	}
++
+diff --git a/tetris/screen.c b/tetris/screen.c
+index 8d00480..36c7113 100644
+--- a/tetris/screen.c
++++ b/tetris/screen.c
+@@ -19,6 +19,7 @@
+ 
+ #include "screen.h"
+ #include "tetris.h"
++#include "stats.h"
+ 
+ static cell curscreen[B_SIZE];	/* 1 => standout (or otherwise marked) */
+ static int curscore;
+@@ -43,7 +44,6 @@ static char
+ 	*bcstr,			/* backspace char */
+ 	*CEstr,			/* clear to end of line */
+ 	*CLstr,			/* clear screen */
+-	*CMstr,			/* cursor motion string */
+ #ifdef unneeded
+ 	*CRstr,			/* "\r" equivalent */
+ #endif
+@@ -53,6 +53,7 @@ static char
+ 	*TEstr,			/* end cursor motion mode */
+ 	*TIstr;			/* begin cursor motion mode */
+ char
++	*CMstr,			/* cursor motion string */
+ 	*SEstr,			/* end standout mode */
+ 	*SOstr;			/* begin standout mode */
+ static int
+@@ -98,14 +99,6 @@ put(c)
+ 	return (putchar(c));
+ }
+ 
+-/*
+- * putstr() is for unpadded strings (either as in termcap(5) or
+- * simply literal strings); putpad() is for padded strings with
+- * count=1.  (See screen.h for putpad().)
+- */
+-#define	putstr(s)	(void)fputs(s, stdout)
+-#define	moveto(r, c)	putpad(tgoto(CMstr, c, r))
+-
+ /*
+  * Set up from termcap.
+  */
+@@ -359,6 +352,8 @@ scr_update()
+ 		curscore = score;
+ 	}
+ 
++    print_stats();
++
+ 	/* draw preview of nextpattern */
+ 	if (showpreview && (nextshape != lastshape)) {
+ 		int i;
+diff --git a/tetris/screen.h b/tetris/screen.h
+index 155f20a..8b3a6e2 100644
+--- a/tetris/screen.h
++++ b/tetris/screen.h
+@@ -3,6 +3,7 @@
+  */
+ extern char *SEstr;		/* end standout mode */
+ extern char *SOstr;		/* begin standout mode */
++extern char	*CMstr;		/* cursor motion string */
+ 
+ /*
+  * putpad() is for padded strings with count=1.
+@@ -16,3 +17,12 @@ void	scr_init(void);
+ void	scr_msg(char *, int);
+ void	scr_set(void);
+ void	scr_update(void);
++
++/* Moved from screen.c   02 Apr 2020 */
++/*
++ * putstr() is for unpadded strings (either as in termcap(5) or
++ * simply literal strings); putpad() is for padded strings with
++ * count=1.  (See screen.h for putpad().)
++ */
++#define	putstr(s)	(void)fputs(s, stdout)
++#define	moveto(r, c)	putpad(tgoto(CMstr, c, r))
+diff --git a/tetris/stats.c b/tetris/stats.c
+new file mode 100644
+index 0000000..840d495
+--- /dev/null
++++ b/tetris/stats.c
+@@ -0,0 +1,70 @@
++/*	@(#)stats.c	8.1 (Berkeley) 5/31/93 
++ */
++
++#include <sys/time.h>
++#include <stdio.h>
++#include <termcap.h>
++#include <unistd.h>
++
++#define	NILTZ ((struct timezone *)0)
++
++#include "input.h"
++#include "stats.h"
++#include "screen.h"
++
++int rot_count;
++int right_count;
++int left_count;
++int drop_count;
++struct timeval game_start;
++struct timeval pause_start;
++
++float
++get_time()
++{
++  struct timeval tv;
++  (void) gettimeofday(&tv, NILTZ);
++  TV_SUB(&tv, &game_start);
++  return (tv.tv_sec + ((float)tv.tv_usec)/1.0e6);
++}
++
++void
++print_stats()
++{
++  moveto(1,0);
++  (void) printf("Time: %0.1f", get_time());
++  moveto(2,0);
++  (void) printf("Rotations: %d", rot_count);
++  moveto(3,0);
++  (void) printf("Right trans: %d", right_count);
++  moveto(4,0);
++  (void) printf("Left trans: %d", left_count);
++  moveto(5,0);
++  (void) printf("Drops: %d", drop_count);
++}
++
++void
++init_stats()
++{
++  (void) gettimeofday(&game_start, NILTZ);
++  rot_count = 0;
++  right_count = 0;
++  left_count = 0;
++  drop_count = 0;
++}
++
++void
++pause_stats()
++{
++  (void) gettimeofday(&pause_start, NILTZ);
++}
++
++void
++unpause_stats()
++{
++  struct timeval tv;
++  (void) gettimeofday(&tv, NILTZ);
++  TV_SUB(&tv, &pause_start);
++  TV_ADD(&game_start, &tv);
++}
++
+diff --git a/tetris/stats.h b/tetris/stats.h
+new file mode 100644
+index 0000000..a5c68ba
+--- /dev/null
++++ b/tetris/stats.h
+@@ -0,0 +1,13 @@
++
++extern int rot_count;
++extern int right_count;
++extern int left_count;
++extern int drop_count;
++extern struct timeval game_start;
++extern struct timeval pause_start;
++
++float get_time(void);
++void print_stats(void);
++void init_stats(void);
++void pause_stats(void);
++void unpause_stats(void);
+diff --git a/tetris/tetris.c b/tetris/tetris.c
+index 46f604b..0253b31 100644
+--- a/tetris/tetris.c
++++ b/tetris/tetris.c
+@@ -22,6 +22,7 @@ __COPYRIGHT("@(#) Copyright (c) 1992, 1993\n\
+ #include "scores.h"
+ #include "screen.h"
+ #include "tetris.h"
++#include "stats.h"
+ 
+ cell	board[B_SIZE];		/* 1 => occupied, 0 => empty */
+ 
+@@ -175,6 +176,8 @@ main(argc, argv)
+ 
+ 	scr_msg(key_msg, 1);
+ 
++    init_stats();
++    
+ 	for (;;) {
+ 		place(curshape, pos, 1);
+ 		scr_update();
+@@ -221,12 +224,14 @@ main(argc, argv)
+ 			    "paused - press RETURN to continue";
+ 
+ 			place(curshape, pos, 1);
++            pause_stats();
+ 			do {
+ 				scr_update();
+ 				scr_msg(key_msg, 0);
+ 				scr_msg(msg, 1);
+ 				(void) fflush(stdout);
+ 			} while (rwait((struct timeval *)NULL) == -1);
++            unpause_stats();
+ 			scr_msg(msg, 0);
+ 			scr_msg(key_msg, 1);
+ 			place(curshape, pos, 0);
+@@ -234,26 +239,34 @@ main(argc, argv)
+ 		}
+ 		if (c == keys[0]) {
+ 			/* move left */
+-			if (fits_in(curshape, pos - 1))
++            if (fits_in(curshape, pos - 1)) {
+ 				pos--;
++                left_count++;
++            }
+ 			continue;
+ 		}
+ 		if (c == keys[1]) {
+ 			/* turn */
+ 			const struct shape *new = &shapes[curshape->rot];
+ 
+-			if (fits_in(new, pos))
++			if (fits_in(new, pos)) {
+ 				curshape = new;
++                rot_count++;
++            }
+ 			continue;
+ 		}
+ 		if (c == keys[2]) {
+ 			/* move right */
+-			if (fits_in(curshape, pos + 1))
++            if (fits_in(curshape, pos + 1)) {
+ 				pos++;
++                right_count++;
++            }
+ 			continue;
+ 		}
+ 		if (c == keys[3]) {
+ 			/* move to bottom */
++            if(fits_in(curshape, pos + B_COLS))
++                drop_count++;
+ 			while (fits_in(curshape, pos + B_COLS)) {
+ 				pos += B_COLS;
+ 				score++;
+-- 
+2.25.1
+
