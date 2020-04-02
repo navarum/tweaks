@@ -1,0 +1,65 @@
+From f607d20ba23e33a1364360c03bf008c8cea52643 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Thu, 2 Apr 2020 10:28:47 -0700
+Subject: [PATCH 6/6] Simplify printing statistics and do it at end
+
+---
+ tetris/stats.c  | 16 ++++++----------
+ tetris/tetris.c |  7 ++++++-
+ 2 files changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/tetris/stats.c b/tetris/stats.c
+index 63289ca..8d6c110 100644
+--- a/tetris/stats.c
++++ b/tetris/stats.c
+@@ -37,16 +37,12 @@ get_paused()
+ void
+ print_stats()
+ {
+-  moveto(1,0);
+-  (void) printf("Time: %0.1f", get_time());
+-  moveto(2,0);
+-  (void) printf("Rotations: %d", rot_count);
+-  moveto(3,0);
+-  (void) printf("Right trans: %d", right_count);
+-  moveto(4,0);
+-  (void) printf("Left trans: %d", left_count);
+-  moveto(5,0);
+-  (void) printf("Drops: %d", drop_count);
++  printf("Time: %0.1f\n", get_time());
++  printf("Paused: %0.1f\n", get_paused());
++  printf("Rotations: %d\n", rot_count);
++  printf("Right trans: %d\n", right_count);
++  printf("Left trans: %d\n", left_count);
++  printf("Drops: %d\n", drop_count);
+ }
+ 
+ void
+diff --git a/tetris/tetris.c b/tetris/tetris.c
+index 61c8f41..fd5f98a 100644
+--- a/tetris/tetris.c
++++ b/tetris/tetris.c
+@@ -282,7 +282,7 @@ main(argc, argv)
+ 		}
+ 	}
+ 
+-	scr_clear();
++	/* scr_clear(); */
+ 	scr_end();
+ 
+ 	(void)printf("Your score:  %d point%s  x  level %d  =  %d\n",
+@@ -295,6 +295,11 @@ main(argc, argv)
+ /* 		if (i == EOF) */
+ /* 			break; */
+ 
++    // Print final statistics
++    printf("# Final statistics #\n");
++    print_stats();
++    printf("# End of statistics #\n");
++
+ 	showscores(level);
+ 
+ 	exit(0);
+-- 
+2.25.1
+

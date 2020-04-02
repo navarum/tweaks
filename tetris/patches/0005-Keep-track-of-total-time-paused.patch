@@ -1,0 +1,53 @@
+From 04724c31fb4ffcc44b993a9058845e0421f84020 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Thu, 2 Apr 2020 10:27:53 -0700
+Subject: [PATCH 5/6] Keep track of total time paused
+
+---
+ tetris/stats.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/tetris/stats.c b/tetris/stats.c
+index e656199..63289ca 100644
+--- a/tetris/stats.c
++++ b/tetris/stats.c
+@@ -16,6 +16,7 @@ int left_count;
+ int drop_count;
+ struct timeval game_start;
+ struct timeval pause_start;
++struct timeval pause_total;
+ 
+ float
+ get_time()
+@@ -26,6 +27,13 @@ get_time()
+   return (tv.tv_sec + ((float)tv.tv_usec)/1.0e6);
+ }
+ 
++float
++get_paused()
++{
++  struct timeval tv;
++  return (pause_total.tv_sec + ((float)pause_total.tv_usec)/1.0e6);
++}
++
+ void
+ print_stats()
+ {
+@@ -49,6 +57,7 @@ init_stats()
+   right_count = 0;
+   left_count = 0;
+   drop_count = 0;
++  pause_total.tv_sec = pause_total.tv_usec = 0;
+ }
+ 
+ void
+@@ -64,5 +73,6 @@ unpause_stats()
+   (void) gettimeofday(&tv, NILTZ);
+   TV_SUB(&tv, &pause_start);
+   TV_ADD(&game_start, &tv);
++  TV_ADD(&pause_total, &tv);
+ }
+ 
+-- 
+2.25.1
+

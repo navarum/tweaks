@@ -1,19 +1,19 @@
-From 2f48dce01c1996860c8d5aa6e815cb53aff06966 Mon Sep 17 00:00:00 2001
+From f78198a66152f093b00a888c69aad3339ee28926 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 09:10:17 -0700
-Subject: [PATCH 3/3] Keep track of statistics and print them during game
+Subject: [PATCH 3/6] Keep track of statistics and print them during game
 
 ---
  exec.objs           |  2 +-
  tetris/Makefile.bsd |  2 +-
  tetris/input.c      | 13 ---------
- tetris/input.h      | 23 +++++++++++++++
+ tetris/input.h      | 23 ++++++++++++++++
  tetris/screen.c     | 13 +++------
  tetris/screen.h     | 10 +++++++
- tetris/stats.c      | 70 +++++++++++++++++++++++++++++++++++++++++++++
+ tetris/stats.c      | 67 +++++++++++++++++++++++++++++++++++++++++++++
  tetris/stats.h      | 13 +++++++++
- tetris/tetris.c     | 19 ++++++++++--
- 9 files changed, 138 insertions(+), 27 deletions(-)
+ tetris/tetris.c     | 19 +++++++++++--
+ 9 files changed, 135 insertions(+), 27 deletions(-)
  create mode 100644 tetris/stats.c
  create mode 100644 tetris/stats.h
 
@@ -177,13 +177,10 @@ index 155f20a..8b3a6e2 100644
 +#define	moveto(r, c)	putpad(tgoto(CMstr, c, r))
 diff --git a/tetris/stats.c b/tetris/stats.c
 new file mode 100644
-index 0000000..840d495
+index 0000000..6aca0b0
 --- /dev/null
 +++ b/tetris/stats.c
-@@ -0,0 +1,70 @@
-+/*	@(#)stats.c	8.1 (Berkeley) 5/31/93 
-+ */
-+
+@@ -0,0 +1,67 @@
 +#include <sys/time.h>
 +#include <stdio.h>
 +#include <termcap.h>
