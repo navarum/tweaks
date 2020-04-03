@@ -1,7 +1,7 @@
 From 04724c31fb4ffcc44b993a9058845e0421f84020 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 10:27:53 -0700
-Subject: [PATCH 5/6] Keep track of total time paused
+Subject: [PATCH 5/8] Keep track of total time paused
 
 ---
  tetris/stats.c | 10 ++++++++++

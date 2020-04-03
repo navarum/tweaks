@@ -1,0 +1,69 @@
+From ca9b8b030e51093da09a868642d3f9e4a49ec8b7 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Thu, 2 Apr 2020 21:21:05 -0700
+Subject: [PATCH 8/8] Include score and level in printed statistics
+
+---
+ tetris/stats.c  | 3 +++
+ tetris/tetris.c | 3 ++-
+ tetris/tetris.h | 2 +-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/tetris/stats.c b/tetris/stats.c
+index 90c8fbc..1a65c19 100644
+--- a/tetris/stats.c
++++ b/tetris/stats.c
+@@ -5,6 +5,7 @@
+ 
+ #define	NILTZ ((struct timezone *)0)
+ 
++#include "tetris.h"
+ #include "input.h"
+ #include "stats.h"
+ #include "screen.h"
+@@ -42,6 +43,8 @@ print_stats()
+   printf("Right trans: %d\n", right_count);
+   printf("Left trans: %d\n", left_count);
+   printf("Drops: %d\n", drop_count);
++  printf("Score: %d\n", score);
++  printf("Level: %d\n", level);
+ }
+ 
+ void
+diff --git a/tetris/tetris.c b/tetris/tetris.c
+index fd5f98a..cbea364 100644
+--- a/tetris/tetris.c
++++ b/tetris/tetris.c
+@@ -34,6 +34,8 @@ const struct shape *nextshape;
+ long	fallrate;		/* less than 1 million; smaller => faster */
+ 
+ int	score;			/* the obvious thing */
++int level = 2;
++
+ gid_t	gid, egid;
+ 
+ char	key_msg[100];
+@@ -96,7 +98,6 @@ main(argc, argv)
+ {
+ 	int pos, c;
+ 	const char *keys;
+-	int level = 2;
+ 	char key_write[6][10];
+ 	int ch, i, j;
+ 	int fd;
+diff --git a/tetris/tetris.h b/tetris/tetris.h
+index 290cffd..514b551 100644
+--- a/tetris/tetris.h
++++ b/tetris/tetris.h
+@@ -127,7 +127,7 @@ extern long	fallrate;	/* less than 1 million; smaller => faster */
+  * we find that it is at rest and integrate it---until then, it can
+  * still be moved or rotated).
+  */
+-extern int	score;		/* the obvious thing */
++extern int	score, level;		/* the obvious thing */
+ extern gid_t	gid, egid;
+ 
+ extern char	key_msg[100];
+-- 
+2.25.1
+

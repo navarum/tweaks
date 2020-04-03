@@ -1,7 +1,7 @@
 From f78198a66152f093b00a888c69aad3339ee28926 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 09:10:17 -0700
-Subject: [PATCH 3/6] Keep track of statistics and print them during game
+Subject: [PATCH 3/8] Keep track of statistics and print them during game
 
 ---
  exec.objs           |  2 +-

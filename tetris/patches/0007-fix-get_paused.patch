@@ -1,0 +1,37 @@
+From ba9ba9f2a1afc7e4761dd480d7f6ef272662f2e7 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Thu, 2 Apr 2020 21:18:27 -0700
+Subject: [PATCH 7/8] fix get_paused
+
+---
+ tetris/stats.c | 1 -
+ tetris/stats.h | 1 +
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tetris/stats.c b/tetris/stats.c
+index 8d6c110..90c8fbc 100644
+--- a/tetris/stats.c
++++ b/tetris/stats.c
+@@ -30,7 +30,6 @@ get_time()
+ float
+ get_paused()
+ {
+-  struct timeval tv;
+   return (pause_total.tv_sec + ((float)pause_total.tv_usec)/1.0e6);
+ }
+ 
+diff --git a/tetris/stats.h b/tetris/stats.h
+index 3203d06..2a27b06 100644
+--- a/tetris/stats.h
++++ b/tetris/stats.h
+@@ -8,6 +8,7 @@ extern struct timeval game_start;
+ extern struct timeval pause_start;
+ 
+ float get_time(void);
++float get_paused(void);
+ void print_stats(void);
+ void init_stats(void);
+ void pause_stats(void);
+-- 
+2.25.1
+
