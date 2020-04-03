@@ -98,7 +98,7 @@ _all_older () {
 
 apply () {
     check_pwd
-    clone
+    [[ "$NODEP" -ne 0 ]] || clone
     if [ -f .applied ]; then
         printf "%s\0" patches/*.patches | (_all_older .applied)
         if printf "%s\0" patches/* | _all_older .applied; then
@@ -185,7 +185,7 @@ default_configure () {
 # do the configuration. arguments are var=value, e.g. PREFIX=~/.local
 configure () {
     check_pwd
-    apply
+    [[ "$NODEP" -ne 0 ]] || apply
     if [ -f .configured ]; then
         warn "Using old configuration; delete .configured to regenerate"
         return 0;
@@ -205,7 +205,7 @@ default_build () {
 
 build () {
     check_pwd
-    configure
+    [[ "$NODEP" -ne 0 ]] || configure
     # XXX maybe better to use the subproject build system to check if
     # built?
     # if [ -f .built ]; then
@@ -226,6 +226,6 @@ install () {
         exit 1
     fi
     check_pwd
-    build
+    [[ "$NODEP" -ne 0 ]] || build
     run_if_exists do_install default_install
 }
