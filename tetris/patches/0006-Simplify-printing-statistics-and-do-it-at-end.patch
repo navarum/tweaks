@@ -1,7 +1,7 @@
-From f607d20ba23e33a1364360c03bf008c8cea52643 Mon Sep 17 00:00:00 2001
+From 3f95dc99c91aaf0f5da5a3e39da2116292596f14 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 10:28:47 -0700
-Subject: [PATCH 6/8] Simplify printing statistics and do it at end
+Subject: [PATCH 06/10] Simplify printing statistics and do it at end
 
 ---
  tetris/stats.c  | 16 ++++++----------

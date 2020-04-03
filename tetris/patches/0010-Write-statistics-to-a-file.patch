@@ -1,0 +1,137 @@
+From 30efa28d9d7de96f673356e206ec555c1d23b526 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Thu, 2 Apr 2020 23:32:30 -0700
+Subject: [PATCH 10/10] Write statistics to a file
+
+---
+ tetris/screen.c |  2 +-
+ tetris/stats.c  | 18 +++++++++---------
+ tetris/stats.h  |  2 +-
+ tetris/tetris.c | 18 +++++++++++++-----
+ tetris/tetris.h |  2 ++
+ 5 files changed, 26 insertions(+), 16 deletions(-)
+
+diff --git a/tetris/screen.c b/tetris/screen.c
+index edd520d..7b1b6d7 100644
+--- a/tetris/screen.c
++++ b/tetris/screen.c
+@@ -354,7 +354,7 @@ scr_update()
+ 
+     if(show_stats) {
+         moveto(1, 0);
+-        print_stats();
++        print_stats(stdout);
+     }
+ 
+ 	/* draw preview of nextpattern */
+diff --git a/tetris/stats.c b/tetris/stats.c
+index 1a65c19..b2951ba 100644
+--- a/tetris/stats.c
++++ b/tetris/stats.c
+@@ -35,16 +35,16 @@ get_paused()
+ }
+ 
+ void
+-print_stats()
++print_stats(FILE *f)
+ {
+-  printf("Time: %0.1f\n", get_time());
+-  printf("Paused: %0.1f\n", get_paused());
+-  printf("Rotations: %d\n", rot_count);
+-  printf("Right trans: %d\n", right_count);
+-  printf("Left trans: %d\n", left_count);
+-  printf("Drops: %d\n", drop_count);
+-  printf("Score: %d\n", score);
+-  printf("Level: %d\n", level);
++	fprintf(f, "Time: %0.1f\n", get_time());
++	fprintf(f, "Paused: %0.1f\n", get_paused());
++	fprintf(f, "Rotations: %d\n", rot_count);
++	fprintf(f, "Right trans: %d\n", right_count);
++	fprintf(f, "Left trans: %d\n", left_count);
++	fprintf(f, "Drops: %d\n", drop_count);
++	fprintf(f, "Score: %d\n", score);
++	fprintf(f, "Level: %d\n", level);
+ }
+ 
+ void
+diff --git a/tetris/stats.h b/tetris/stats.h
+index 2a27b06..7f9a60c 100644
+--- a/tetris/stats.h
++++ b/tetris/stats.h
+@@ -9,7 +9,7 @@ extern struct timeval pause_start;
+ 
+ float get_time(void);
+ float get_paused(void);
+-void print_stats(void);
++void print_stats(FILE *);
+ void init_stats(void);
+ void pause_stats(void);
+ void unpause_stats(void);
+diff --git a/tetris/tetris.c b/tetris/tetris.c
+index 9e6b430..19d7fa3 100644
+--- a/tetris/tetris.c
++++ b/tetris/tetris.c
+@@ -17,6 +17,7 @@ __COPYRIGHT("@(#) Copyright (c) 1992, 1993\n\
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
++#include <errno.h>
+ 
+ #include "input.h"
+ #include "scores.h"
+@@ -101,6 +102,7 @@ main(argc, argv)
+ 	char key_write[6][10];
+ 	int ch, i, j;
+ 	int fd;
++	FILE *stats_out=NULL;
+ 
+ 	gid = getgid();
+ 	egid = getegid();
+@@ -113,12 +115,18 @@ main(argc, argv)
+ 
+ 	keys = "jkl pq";
+ 
+-	while ((ch = getopt(argc, argv, "k:l:psS")) != -1)
++	while ((ch = getopt(argc, argv, "k:l:o:psS")) != -1)
+ 		switch(ch) {
+ 		case 'k':
+ 			if (strlen(keys = optarg) != 6)
+ 				usage();
+ 			break;
++		case 'o':
++			stats_out = fopen(optarg, "w");
++			if(!stats_out) {
++				stop(strerror(errno));
++			}
++			break;
+ 		case 'l':
+ 			level = atoi(optarg);
+ 			if (level < MINLEVEL || level > MAXLEVEL) {
+@@ -296,10 +304,10 @@ main(argc, argv)
+ /* 		if (i == EOF) */
+ /* 			break; */
+ 
+-    // Print final statistics
+-    printf("# Final statistics #\n");
+-    print_stats();
+-    printf("# End of statistics #\n");
++	if(stats_out != NULL) {
++		// write final statistics to output file
++		print_stats(stats_out);
++	}
+ 
+ 	showscores(level);
+ 
+diff --git a/tetris/tetris.h b/tetris/tetris.h
+index af02281..21236c1 100644
+--- a/tetris/tetris.h
++++ b/tetris/tetris.h
+@@ -136,3 +136,5 @@ extern int	showpreview;
+ int	fits_in(const struct shape *, int);
+ void	place(const struct shape *, int, int);
+ void	stop(const char *) __attribute__((__noreturn__));
++
++extern const char *stats_outfile;
+-- 
+2.25.1
+

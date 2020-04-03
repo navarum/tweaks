@@ -1,7 +1,7 @@
-From 11aed6016d7c8d07be876de2540839fb0639cb75 Mon Sep 17 00:00:00 2001
+From dfdae10f14e815f64d0e840e2054448190121d29 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 09:04:22 -0700
-Subject: [PATCH 2/8] Remove legalese
+Subject: [PATCH 02/10] Remove legalese
 
 ---
  tetris/Makefrag       | 28 ----------------------------
