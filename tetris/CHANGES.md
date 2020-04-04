@@ -4,16 +4,18 @@
 
 - Don't ask if user wants to see scores
 
-- Keep track of statistics like total time, number of rotations, etc. and print them at the end
+- Keep track of statistics like total time, number of rotations, etc. and output them to a file
 
-  (The purpose of the last change is to make it easier to use this game for psychology experiments)
+  (The last change is for gathering additional data that may be of use in psychology experiments)
 
-      Your score:  43 points  x  level 2  =  86
-      # Final statistics #
-      Time: 10.1
-      Paused: 1.1
-      Rotations: 8
+      $ tetris -o stats.out
+      ...
+      $ cat stats.out
+      Time: 7.0
+      Paused: 0.0
+      Rotations: 4
       Right trans: 6
       Left trans: 4
       Drops: 3
-      # End of statistics #
+      Score: 51
+      Level: 2
