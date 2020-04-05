@@ -1,0 +1,102 @@
+From d422724694085277fa88b68ec4bf755c02f1edf0 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Sun, 5 Apr 2020 02:14:49 -0700
+Subject: [PATCH 12/12] Add average height statistics
+
+---
+ tetris/stats.c  |  2 ++
+ tetris/tetris.c | 35 +++++++++++++++++++++++++++++++++++
+ tetris/tetris.h |  4 ++++
+ 3 files changed, 41 insertions(+)
+
+diff --git a/tetris/stats.c b/tetris/stats.c
+index b2951ba..f4e2c36 100644
+--- a/tetris/stats.c
++++ b/tetris/stats.c
+@@ -43,6 +43,8 @@ print_stats(FILE *f)
+ 	fprintf(f, "Right trans: %d\n", right_count);
+ 	fprintf(f, "Left trans: %d\n", left_count);
+ 	fprintf(f, "Drops: %d\n", drop_count);
++	fprintf(f, "Average height: %0.2f\n", ((float)acc_height)/step_count);
++	fprintf(f, "Last height: %d\n", last_height);
+ 	fprintf(f, "Score: %d\n", score);
+ 	fprintf(f, "Level: %d\n", level);
+ }
+diff --git a/tetris/tetris.c b/tetris/tetris.c
+index 19d7fa3..39c106f 100644
+--- a/tetris/tetris.c
++++ b/tetris/tetris.c
+@@ -37,6 +37,10 @@ long	fallrate;		/* less than 1 million; smaller => faster */
+ int	score;			/* the obvious thing */
+ int level = 2;
+ 
++int last_height=0;
++long acc_height=0;
++int step_count=0;
++
+ gid_t	gid, egid;
+ 
+ char	key_msg[116];
+@@ -64,6 +68,35 @@ setup_board()
+ 		*p++ = i <= (2 * B_COLS) || (i % B_COLS) < 2;
+ }
+ 
++/* Called by update_height */
++static int
++get_height(void)
++{
++	int i, j, base;
++	cell *p;
++
++	// Find the first empty row
++	for (i = A_LAST; i >= A_FIRST; i--) {
++		base = i * B_COLS + 1;
++		p = &board[base];
++		for (j = B_COLS - 2; *p++ == 0;) {
++			if(--j <= 0) {
++				return A_LAST-i-1;
++			}
++		}
++	}
++	return A_LAST-A_FIRST-1;
++}
++
++/* Update height accounting, maybe this is a useful statistic */
++static void
++update_height(void)
++{
++	step_count ++;
++	last_height = get_height();
++	acc_height += last_height;
++}
++
+ /*
+  * Elide any full active rows.
+  */
+@@ -191,6 +224,8 @@ main(argc, argv)
+     init_stats();
+     
+ 	for (;;) {
++		update_height();
++
+ 		place(curshape, pos, 1);
+ 		scr_update();
+ 		place(curshape, pos, 0);
+diff --git a/tetris/tetris.h b/tetris/tetris.h
+index 21236c1..c896000 100644
+--- a/tetris/tetris.h
++++ b/tetris/tetris.h
+@@ -133,6 +133,10 @@ extern gid_t	gid, egid;
+ extern char	key_msg[116];
+ extern int	showpreview;
+ 
++extern int last_height;
++extern long acc_height;
++extern int step_count;
++
+ int	fits_in(const struct shape *, int);
+ void	place(const struct shape *, int, int);
+ void	stop(const char *) __attribute__((__noreturn__));
+-- 
+2.26.0
+

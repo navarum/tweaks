@@ -1,7 +1,7 @@
-From 8bffeac09934ab82b1d1e7a15479c49f2961067c Mon Sep 17 00:00:00 2001
+From 9878763f4987f64d34bee2fdf1e153b358029172 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 10:27:53 -0700
-Subject: [PATCH 05/10] Keep track of total time paused
+Subject: [PATCH 05/12] Keep track of total time paused
 
 ---
  tetris/stats.c | 10 ++++++++++
@@ -49,5 +49,5 @@ index e656199..63289ca 100644
  }
  
 -- 
-2.25.1
+2.26.0
 

@@ -1,7 +1,7 @@
-From 30efa28d9d7de96f673356e206ec555c1d23b526 Mon Sep 17 00:00:00 2001
+From 33b110121355c679819fed84ed0c8ff379391352 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 23:32:30 -0700
-Subject: [PATCH 10/10] Write statistics to a file
+Subject: [PATCH 10/12] Write statistics to a file
 
 ---
  tetris/screen.c |  2 +-
@@ -133,5 +133,5 @@ index af02281..21236c1 100644
 +
 +extern const char *stats_outfile;
 -- 
-2.25.1
+2.26.0
 

@@ -1,7 +1,7 @@
-From e34f1384aedd814bcd35d7126c902479a1e214ad Mon Sep 17 00:00:00 2001
+From 294531e4aa1ce87f3e15c130158b951f22defe5c Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Tue, 31 Mar 2020 02:44:36 -0700
-Subject: [PATCH 01/10] Remove some annoying interactions
+Subject: [PATCH 01/12] Remove some annoying interactions
 
 - Don't sleep during 'elide'
 - Don't ask user about seeing high scores
@@ -57,5 +57,5 @@ index ba830bf..3f13ebf 100644
  	showscores(level);
  
 -- 
-2.25.1
+2.26.0
 

@@ -1,7 +1,7 @@
-From 17518f3fe23eff9daa3fd3bac124b40c830f750b Mon Sep 17 00:00:00 2001
+From 71e5a87319a431eafae0183a6a24d5fc52e95934 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 09:10:17 -0700
-Subject: [PATCH 03/10] Keep track of statistics and print them during game
+Subject: [PATCH 03/12] Keep track of statistics and print them during game
 
 ---
  exec.objs           |  2 +-
@@ -342,5 +342,5 @@ index 46f604b..0253b31 100644
  				pos += B_COLS;
  				score++;
 -- 
-2.25.1
+2.26.0
 

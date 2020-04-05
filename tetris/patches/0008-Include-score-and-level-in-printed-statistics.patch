@@ -1,7 +1,7 @@
-From d06ffa825f6a924907cdea9a676f8aea3b1ae7d5 Mon Sep 17 00:00:00 2001
+From a2ee7f0ce4275b265a436bca593580d577f45819 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 21:21:05 -0700
-Subject: [PATCH 08/10] Include score and level in printed statistics
+Subject: [PATCH 08/12] Include score and level in printed statistics
 
 ---
  tetris/stats.c  | 3 +++
@@ -65,5 +65,5 @@ index 290cffd..514b551 100644
  
  extern char	key_msg[100];
 -- 
-2.25.1
+2.26.0
 

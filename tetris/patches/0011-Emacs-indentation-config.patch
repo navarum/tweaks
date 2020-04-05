@@ -1,0 +1,22 @@
+From 3e776153933b0055e06af85c3f0b69a08012b985 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Fri, 3 Apr 2020 18:16:48 -0700
+Subject: [PATCH 11/12] Emacs indentation config
+
+---
+ .dir-locals.el | 3 +++
+ 1 file changed, 3 insertions(+)
+ create mode 100644 .dir-locals.el
+
+diff --git a/.dir-locals.el b/.dir-locals.el
+new file mode 100644
+index 0000000..f03db18
+--- /dev/null
++++ b/.dir-locals.el
+@@ -0,0 +1,3 @@
++((nil . ((indent-tabs-mode . t)
++         (c-basic-offset . 4)))
++ )
+-- 
+2.26.0
+

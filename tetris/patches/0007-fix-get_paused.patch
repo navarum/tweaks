@@ -1,7 +1,7 @@
-From 60ffcaf7bab351c323ff64686e202a13be07531a Mon Sep 17 00:00:00 2001
+From 76945cf2bb96b82a99a207928cee2d2634a2f263 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 21:18:27 -0700
-Subject: [PATCH 07/10] fix get_paused
+Subject: [PATCH 07/12] fix get_paused
 
 ---
  tetris/stats.c | 1 -
@@ -33,5 +33,5 @@ index 3203d06..2a27b06 100644
  void init_stats(void);
  void pause_stats(void);
 -- 
-2.25.1
+2.26.0
 

@@ -1,7 +1,7 @@
-From 105b77d8f2cd42ce3bb7b8a5f28caf9815bb87f7 Mon Sep 17 00:00:00 2001
+From a6794ed3b4a8adacbb1e75b7dc1045227f058230 Mon Sep 17 00:00:00 2001
 From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
 Date: Thu, 2 Apr 2020 10:26:48 -0700
-Subject: [PATCH 04/10] Option to show statistics during game
+Subject: [PATCH 04/12] Option to show statistics during game
 
 ---
  tetris/screen.c | 5 ++++-
@@ -72,5 +72,5 @@ index 0253b31..61c8f41 100644
  		default:
  			usage();
 -- 
-2.25.1
+2.26.0
 
