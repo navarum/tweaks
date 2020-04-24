@@ -1,0 +1,25 @@
+From ab1630d6452d9983af854fe38d04170f7d74e35b Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 24 Apr 2020 03:54:04 -0700
+Subject: [PATCH 2/2] default to -X (Do_not_use_ti_te=TRUE)
+
+---
+ fm.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fm.h b/fm.h
+index 4a17ecc..ee0ef52 100644
+--- a/fm.h
++++ b/fm.h
+@@ -884,7 +884,7 @@ global TextList *NO_proxy_domains;
+ global char NoCache init(FALSE);
+ global char use_proxy init(TRUE);
+ #define Do_not_use_proxy (!use_proxy)
+-global int Do_not_use_ti_te init(FALSE);
++global int Do_not_use_ti_te init(TRUE);
+ #ifdef USE_NNTP
+ global char *NNTP_server init(NULL);
+ global char *NNTP_mode init(NULL);
+-- 
+2.26.0
+

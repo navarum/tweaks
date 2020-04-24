@@ -1,0 +1,39 @@
+From f11581251296a5fe175710010e398982db46c782 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Fri, 24 Apr 2020 03:08:33 -0700
+Subject: [PATCH 1/2] Try to fix PRE
+
+---
+ file.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/file.c b/file.c
+index 0333e9a..913a111 100644
+--- a/file.c
++++ b/file.c
+@@ -2563,8 +2563,8 @@ check_breakpoint(struct readbuffer *obuf, int pre_mode, char *ch)
+     int tlen, len = obuf->line->length;
+ 
+     append_tags(obuf);
+-    if (pre_mode)
+-	return;
++    /* if (pre_mode) */
++    /*     return; */
+     tlen = obuf->line->length - len;
+     if (tlen > 0
+ 	|| is_boundary((unsigned char *)obuf->prevchar->ptr,
+@@ -6560,8 +6560,9 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 		    else
+ 			proc_mchar(obuf, 1, delta, &str, mode);
+ 		}
+-		if (obuf->flag & (RB_SPECIAL & ~RB_PRE_INT))
+-		    continue;
++                // NE 24 Apr 2020 this seems to do the trick
++		/* if (obuf->flag & (RB_SPECIAL & ~RB_PRE_INT)) */
++		/*     continue; */
+ 	    }
+ 	    else {
+ 		if (!IS_SPACE(*str))
+-- 
+2.26.0
+
