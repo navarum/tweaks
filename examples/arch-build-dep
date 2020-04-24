@@ -1,0 +1,26 @@
+#!/bin/zsh
+
+[[ "$#" -ne 1 ]] && { >&2 echo Expected one argument; exit 1 }
+
+PKG=$1; shift
+
+set -e
+
+TD=$(mktemp $(basename $0).XXXXXX --tmpdir -d)
+cd $TD
+
+# maybe use KEEP=1 for debugging
+if [[ "$KEEP" -eq 0 ]]; then
+    trap '>&2 echo removing $TD; rm -rf $TD' EXIT
+fi
+
+asp checkout "$PKG"
+cd "$PKG/repos"/*/
+
+if [[ "$JUSTPRINT" -ne 0 ]]; then
+    # print the dependencies
+    makepkg --printsrcinfo | grep depends | cut -d = -f 2 | cut -d : -f 1
+else
+    # install the dependencies
+    makepkg -seo
+fi
