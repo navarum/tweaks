@@ -1,0 +1,38 @@
+From eb0fa3a92dc55aa70c9a6a27f5aa26af70a35046 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 24 Apr 2020 04:54:02 -0700
+Subject: [PATCH 3/3] debugging ti/te
+
+---
+ fm.h    | 2 +-
+ terms.c | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/fm.h b/fm.h
+index ee0ef52..4a17ecc 100644
+--- a/fm.h
++++ b/fm.h
+@@ -884,7 +884,7 @@ global TextList *NO_proxy_domains;
+ global char NoCache init(FALSE);
+ global char use_proxy init(TRUE);
+ #define Do_not_use_proxy (!use_proxy)
+-global int Do_not_use_ti_te init(TRUE);
++global int Do_not_use_ti_te init(FALSE);
+ #ifdef USE_NNTP
+ global char *NNTP_server init(NULL);
+ global char *NNTP_mode init(NULL);
+diff --git a/terms.c b/terms.c
+index a636ac0..d190700 100644
+--- a/terms.c
++++ b/terms.c
+@@ -896,6 +896,7 @@ reset_tty(void)
+     TerminalSet(tty, &d_ioval);
+     if (tty != 2)
+         close_tty();
++    fprintf(stderr, "(T_te && *T_te): %d\n", (T_te && *T_te));
+ }
+ 
+ static MySignalHandler
+-- 
+2.26.0
+
