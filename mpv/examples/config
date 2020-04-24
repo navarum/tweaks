@@ -1,0 +1,25 @@
+volume-max=1000
+volume=100
+
+alang=en
+slang=en
+
+# the OSC is annoying
+no-osc
+
+# don't show the subtitle until i have a chance to hear it
+sub-delay=1.8
+
+# don't start playing with broken audio
+audio-fallback-to-null=no
+stop-playback-on-init-failure=yes
+
+audio-channels=auto
+audio-device=pulse
+no-audio-display
+
+# smaller subs
+sub-scale=0.5
+
+# don't quit when we accidentally navigate past the end
+keep-open=yes
