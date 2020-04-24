@@ -120,7 +120,9 @@ apply () {
     if _ref -q $mybranch && _ref -q $mybranch-new; then
         if [[ "$(_ref $mybranch-new)" != "$(_ref $mybranch)" ]]; then
             warn "Error: Branch $mybranch-new doesn't match $mybranch"
-            warn "Do you have unexported changes? (see BUILD-NOTES.md)"
+            warn "Do you have unexported changes? See BUILD-NOTES.md, or:"
+            warn "   git format-patch mybase -o ../patches"
+            warn "   git branch -f navarum navarum-new"
             exit 1;
         fi
     fi
