@@ -1,0 +1,23 @@
+From 0f2f5c84b2fd64aab1b0f5b53bb3514342943003 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Wed, 6 May 2020 09:29:02 -0700
+Subject: [PATCH 2/2] add dir-locals for tab width
+
+---
+ .dir-locals.el | 4 ++++
+ 1 file changed, 4 insertions(+)
+ create mode 100644 .dir-locals.el
+
+diff --git a/.dir-locals.el b/.dir-locals.el
+new file mode 100644
+index 0000000000..60599b6f49
+--- /dev/null
++++ b/.dir-locals.el
+@@ -0,0 +1,4 @@
++((nil . ((indent-tabs-mode . t)
++         (tab-width . 8)
++         (c-basic-offset . 4)))
++ )
+-- 
+2.26.2
+

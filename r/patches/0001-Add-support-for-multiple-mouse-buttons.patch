@@ -1,7 +1,7 @@
-From 0b5da8113393ef1b645f509203e9caef65da1380 Mon Sep 17 00:00:00 2001
+From 62d130e02bb0d55b08fcc2d7fec25d14e507db98 Mon Sep 17 00:00:00 2001
 From: Navarum <48705414+navarum@users.noreply.github.com>
 Date: Mon, 30 Dec 2019 05:15:17 -0800
-Subject: [PATCH] Add support for multiple mouse buttons
+Subject: [PATCH 1/2] Add support for multiple mouse buttons
 
 ---
  src/include/R_ext/GraphicsDevice.h |  1 +
@@ -77,5 +77,5 @@ index 8781e8ef17..1653e86697 100644
  	PROTECT(sx = ScalarReal( (x - dd->left) / (dd->right - dd->left) ));
  	PROTECT(sy = ScalarReal((y - dd->bottom) / (dd->top - dd->bottom) ));
 -- 
-2.24.1
+2.26.2
 
