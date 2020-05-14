@@ -20,6 +20,7 @@ Packages:
 * [urxvt](urxvt/CHANGES.md) - includes patches to improve support for turning off certain features, like blinking cursor or secondary screen
 * [unison](unison/CHANGES.md) - build Unison together with a version of OCaml that succeeds in building it
 * [GNU R](r/CHANGES.md) - recent version with some minor changes
+* [tetris](tetris/CHANGES.md) - no blink and statistics gathering
 * [w3m](w3m/CHANGES.md) - wrap PRE/CODE tag
 * [mpv](mpv/CHANGES.md) - allow GNU long options
 
