@@ -1,0 +1,125 @@
+From 706bcd5874f956fa1cbccb8b679fffd71de08f97 Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Sat, 16 May 2020 00:11:35 -0700
+Subject: [PATCH 1/2] Describe -l flag. Original changes implementing flag.
+
+---
+ sgrep.c | 34 ++++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
+
+diff --git a/sgrep.c b/sgrep.c
+index d4f7d45..b5ec833 100644
+--- a/sgrep.c
++++ b/sgrep.c
+@@ -27,10 +27,13 @@
+  * or the first matching line.  Sgrep outputs matching lines until it
+  * encounters a non matching line.
+  *
+- * Usage:  sgrep [ -i | -n ] [ -c ] [ -b ] [ -r ] key [ sorted_file ... ]
++ * Usage:  sgrep [ -l | -i | -n ] [ -c ] [ -b ] [ -r ] key [ sorted_file ... ]
+  *
+  * If no input file is specified, then sgrep uses stdin.
+  *
++ * The -l flag prints the "greatest lower bound", the greatest
++ * element in the file less than the key, if it exists
++ *
+  * The -i flag uses case insensitive byte comparison.  The file must
+  * be sorted with "sort -f".
+  *
+@@ -65,6 +68,9 @@
+ #include <ctype.h>
+ #include <stdio.h>
+ 
++/* Set to 1 if the user also wants the greatest lower bound (when there is no match) */
++int glb = 0;
++
+ /* We need different comparison functions for different sort orderings */
+ 
+ /* exact comparison */
+@@ -193,7 +199,7 @@ static int (*compare)(const char *key, FILE *fp);
+ static off_t
+ binsrch(const char *key, FILE *fp, int reverse) {
+     off_t low, med, high, start, prev = -1, ret = -1;
+-    int cmp, c;
++    int cmp, c, havematch=0;
+     struct stat st;
+ 
+     fstat(fileno(fp), &st);
+@@ -203,6 +209,8 @@ binsrch(const char *key, FILE *fp, int reverse) {
+         med = (high + low) / 2;
+         fseeko(fp, med, SEEK_SET);
+ 
++        // med is where we started, start is the current pointer
++
+         /* scan to start of next line if not at beginning of file */
+ 
+         if ((start = med) != 0)  {
+@@ -211,6 +219,9 @@ binsrch(const char *key, FILE *fp, int reverse) {
+             } while ((c = getc(fp)) != '\n' && c != EOF);
+         }
+ 
++        /* now file[start] is '\n' or EOF and compare(key, fp) will
++           start reading the next entry here */
++
+         /* compare key with current line */
+ 
+         if (start != prev) {        /* avoid unnecessary compares */
+@@ -224,13 +235,20 @@ binsrch(const char *key, FILE *fp, int reverse) {
+         /* eliminate half of input */
+ 
+         if (cmp < 0) {
++            /* fprintf(stderr,"found more key at %d\n",start); */
+             high = med - 1;
+         }
+         else if (cmp > 0) {
+-            low = start + 1;
++          // *fp is less than key
++            /* fprintf(stderr,"found less key at %d\n",start); */
++          if(glb && !havematch)
++            ret = start;
++          low = start + 1;
+         }
+         else {             /* success, look for earlier match */
++            /* fprintf(stderr,"found equal key at %d\n",start); */
+             ret = start;
++            havematch = 1;
+             high = med - 1;
+         }
+     }
+@@ -238,17 +256,18 @@ binsrch(const char *key, FILE *fp, int reverse) {
+ }
+ 
+ /* print all lines that match the key or else just the number of matches */
+-
++/* if we are at beginning of file, then start=-1 */
+ static void
+ printmatch(const char *key, FILE *fp, off_t start,
+     const char *fname, int cflag)
+ {
+     int c, count;
+ 
++    /* fprintf(stdout,"start=%d\n",start); */
+     if (start >= 0) {
+         fseeko(fp, start, SEEK_SET);
+     }
+-    for (count = 0; start >= 0 && compare(key, fp) == 0; count++) {
++    for (count = 0; start >= 0 && compare(key, fp) >= 0; count++) {
+         fseeko(fp, start, SEEK_SET);
+         if (cflag == 0 && fname != 0) {
+             fputs(fname, stdout);
+@@ -289,8 +308,11 @@ main(int argc, char **argv) {
+     /* parse command line options */
+ 
+     opterr = 0;
+-    while ((i = getopt(argc, argv, "bcfinr")) > 0 && i != '?') {
++    while ((i = getopt(argc, argv, "bcfinrl")) > 0 && i != '?') {
+         switch(i) {
++        case 'l':
++          glb=1;
++          break;
+         case 'b':
+             bflag++;
+             break;
+-- 
+2.26.2
+

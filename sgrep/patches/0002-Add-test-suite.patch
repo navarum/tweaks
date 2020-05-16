@@ -1,0 +1,109 @@
+From 3b53cf16e6b5e47dbf1eebacab2716919cedbaab Mon Sep 17 00:00:00 2001
+From: Navarum Eliskar <48705414+navarum@users.noreply.github.com>
+Date: Sat, 16 May 2020 00:25:34 -0700
+Subject: [PATCH 2/2] Add test suite
+
+---
+ t/t00-sgrep-basic     | 17 +++++++++++++++++
+ t/test-old            |  6 ++++++
+ t/test-sgrep.tab      | 14 ++++++++++++++
+ t/testlib-common.bash | 28 ++++++++++++++++++++++++++++
+ 4 files changed, 65 insertions(+)
+ create mode 100755 t/t00-sgrep-basic
+ create mode 100755 t/test-old
+ create mode 100644 t/test-sgrep.tab
+ create mode 100644 t/testlib-common.bash
+
+diff --git a/t/t00-sgrep-basic b/t/t00-sgrep-basic
+new file mode 100755
+index 0000000..d9ba741
+--- /dev/null
++++ b/t/t00-sgrep-basic
+@@ -0,0 +1,17 @@
++#!/usr/bin/bats --tap
++# -*- mode: sh; -*-
++
++# NE 15 May 2020
++load testlib-common
++
++T=$PWD/t/test-sgrep.tab
++
++PATH=$PWD:$PATH
++
++@test "basic -l (glb) functionality" {
++    streq $(sgrep -l -n 8 $T) 7
++    streq $(sgrep -l -n 9 $T) 9
++    streq $(sgrep -l -n 6 $T | cut -d ' ' -f 1) 5
++    streq $(sgrep -l -n 11 $T) 11
++    streq $(sgrep -l -n 3 $T) 3
++}
+diff --git a/t/test-old b/t/test-old
+new file mode 100755
+index 0000000..912a586
+--- /dev/null
++++ b/t/test-old
+@@ -0,0 +1,6 @@
++#!/bin/sh
++
++set -e
++T=t/test-sgrep.tab
++test $(./sgrep -n 9 $T) = 9
++test $(./sgrep -n 8 $T) = 7
+diff --git a/t/test-sgrep.tab b/t/test-sgrep.tab
+new file mode 100644
+index 0000000..ff0f8c4
+--- /dev/null
++++ b/t/test-sgrep.tab
+@@ -0,0 +1,14 @@
++1
++3
++5 a
++5 b
++5 c
++5 d
++5 e
++5 f
++5 g
++7
++9
++11
++13
++15
+\ No newline at end of file
+diff --git a/t/testlib-common.bash b/t/testlib-common.bash
+new file mode 100644
+index 0000000..7f10e8c
+--- /dev/null
++++ b/t/testlib-common.bash
+@@ -0,0 +1,28 @@
++
++browser () {
++    # ad libitum
++    urxvt -e bash >/dev/null 2>&1
++}
++
++streq () {
++    if test "x$1" = "x$2"; then true
++    else >&2 echo streq: "$1" was not equal to "$2"; false
++    fi
++}
++
++TMPD=
++setup () {
++    export PATH=$(dirname $0)"/..":$PATH
++
++    TMPD=$(mktemp -d trash-t-sgrep.XXXXXX --tmpdir)
++    if [ $BATS_TEST_NUMBER = 1 ]; then
++        # tell user how to clean up
++        >&3 echo "Writing to $TMPD"
++        >&3 echo "Using "$(which sgrep)
++    fi
++    cd $TMPD
++}
++
++teardown () {
++    rm -rf $TMPD
++}
+-- 
+2.26.2
+
