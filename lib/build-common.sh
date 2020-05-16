@@ -28,6 +28,7 @@ die() {
     exit 1
 }
 check_pwd () {
+    # we want to be in same directory as BUILD
     if [[ "$PWD" != "$scriptdir" ]]; then
         die Wrong pwd: $PWD
         exit 1
