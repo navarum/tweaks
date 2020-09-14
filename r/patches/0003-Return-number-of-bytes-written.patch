@@ -1,0 +1,24 @@
+From 3304e714f204c22d8e5c2ae93828683e04d1569d Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 22 May 2020 15:42:37 -0700
+Subject: [PATCH 3/3] Return number of bytes written
+
+---
+ src/main/connections.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/main/connections.c b/src/main/connections.c
+index 88f082c696..2c47589018 100644
+--- a/src/main/connections.c
++++ b/src/main/connections.c
+@@ -4632,6 +4632,7 @@ SEXP attribute_hidden do_writebin(SEXP call, SEXP op, SEXP args, SEXP env)
+ 	} else {
+ 	    size_t nwrite = con->write(buf, size, len, con);
+ 	    if(nwrite < len) warning(_("problem writing to connection"));
++	    ans = ScalarInteger(nwrite);
+ 	}
+ 	Free(buf);
+     }
+-- 
+2.26.2
+
