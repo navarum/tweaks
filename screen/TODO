@@ -1,3 +1,6 @@
+- ability to change the selected window in a detached session
+    (screen -S _daemons -X select 1; sds _daemons -- this only works if it is attached elsewhere)
+
 - Change nomenclature of nav patch. "nav_mode" -> "window_order",
   "fixed"->"numeric", "floating"->"linked" ...?
 
