@@ -2,7 +2,6 @@
 # in that file should be given defaults in this one, and
 # screen-specific elements of this file should be removed to that one
 
-: ${PREFIX:=$HOME/navarum-testing}
 mybranch=navarum # should avoid conflicts
 gitusername='Navarum Eliskar'
 gituseremail='48705414+navarum@users.noreply.github.com'
@@ -232,3 +231,17 @@ install () {
     [[ "$NODEP" -ne 0 ]] || build
     run_if_exists do_install default_install
 }
+
+# source configuration file
+
+config=$(dirname $BASH_SOURCE)/../BUILDVARS
+if [[ ! -f $config ]]; then
+  debug No config file $config
+else
+  debug Configuration file $config: >&2
+  cat $config | while read l; do
+      debug "$l";
+  done
+  . $config
+fi
+
