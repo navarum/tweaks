@@ -1,0 +1,39 @@
+From 28074276b11e79c742fc6c2b83debbb560d92bc5 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Mon, 18 Jan 2021 20:54:04 -0800
+Subject: [PATCH] Don't print full help text after each argument parsing error
+
+---
+ src/sox.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/src/sox.c b/src/sox.c
+index 9e59a60d..6661ae69 100644
+--- a/src/sox.c
++++ b/src/sox.c
+@@ -1976,8 +1976,13 @@ static void usage(char const * message)
+     putchar('\n');
+   }
+ 
+-  if (message)
++  if (message) {
+     lsx_fail("%s\n", message);  /* N.B. stderr */
++    /* we don't actually want to show the help text in case there is
++       an error message, since it is several pages and obscures the
++       message */
++    goto out;
++  }
+ 
+   printf("Usage summary: [gopts] [[fopts] infile]... [fopts]%s [effect [effopt]]...\n\n",
+          sox_mode == sox_play? "" : " outfile");
+@@ -1999,6 +2004,7 @@ static void usage(char const * message)
+   display_supported_formats();
+   display_supported_effects();
+   printf("EFFECT OPTIONS (effopts): effect dependent; see --help-effect\n");
++  out:
+   exit(message != NULL);
+ }
+ 
+-- 
+2.30.0
+

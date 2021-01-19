@@ -22,5 +22,5 @@ Packages:
 * [GNU R](r/CHANGES.md) - recent version with some minor changes
 * [tetris](tetris/CHANGES.md) - no blink and statistics gathering
 * [w3m](w3m/CHANGES.md) - wrap PRE/CODE tag
-* [mpv](mpv/CHANGES.md) - allow GNU long options
-
+* [mpv](mpv/CHANGES.md) - re-allow GNU long options
+* [sox](sox/CHANGES.md) - don't print entire help text for each error message
