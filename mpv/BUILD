@@ -23,11 +23,12 @@ pre_configure_hook () {
 }
 
 do_configure () {
-    ./waf configure --prefix $PREFIX
+  run_verb ./waf configure --prefix $PREFIX \
+    --enable-dvdnav
 }
 
 do_build () {
-    (cd $srcdir && ./waf)
+    (cd $srcdir && ./waf build -j4)
 }
 
 do_install () {
