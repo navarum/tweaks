@@ -232,15 +232,22 @@ install () {
     run_if_exists do_install default_install
 }
 
+run_verb () {
+  warn "$@"
+  "$@"
+}
+
 # source configuration file
 
 config=$(dirname $BASH_SOURCE)/../BUILDVARS
 if [[ ! -f $config ]]; then
   debug No config file $config
 else
-  debug Configuration file $config: >&2
+  debug Configuration file $config:
+  # NE 18 Jan 2021
+  # list all the build variables by default
   cat $config | while read l; do
-      debug "$l";
+      warn "$l";
   done
   . $config
 fi
