@@ -42,7 +42,7 @@ FAILED=""
 if [ $# -gt 0 ]; then
     TARGETS="$@"
 else
-    TARGETS="screen pulseaudio urxvt unison r"
+    TARGETS="screen pulseaudio urxvt unison r sox sgrep w3m"
 fi
 for pkg in $TARGETS; do
     ./$pkg/BUILD install || FAILED="$FAILED $pkg"
