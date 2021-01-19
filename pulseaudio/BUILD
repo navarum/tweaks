@@ -9,7 +9,8 @@ set -e
 
 #https://gitlab.freedesktop.org/gchini/pulseaudio/tree/all_patches
 upstream=https://gitlab.freedesktop.org/gchini/pulseaudio/
-patchbase=b08561af0b770459f3eb2197479e5afec0244eb4 # Thu Jan 16 19:14:08 2020 +0100
+patchbase=01ba57f42eafdc792640fc6e7dbe9306625ff1e0 # Sat Jan 2 17:44:03 2021 +0100
+#patchbase=b08561af0b770459f3eb2197479e5afec0244eb4 # Thu Jan 16 19:14:08 2020 +0100
 #patchbase=52104615db9e312d768f49713ac2a7029f706678 # Fri Jul 12 09:33:01 2019
 #patchbase=44c5ed24c49b4e78abdf5192abed85885eefce68 # 4.0.2
 srcdir=pulseaudio.git
