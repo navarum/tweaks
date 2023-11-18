@@ -1,0 +1,4 @@
+#!/bin/sh
+
+#export PATH=~/pkg-tmp/i3/build/:$PATH
+exec ~/pkg-tmp/i3/build/i3 "$@"

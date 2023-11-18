@@ -1,0 +1,21 @@
+#!/bin/zsh
+# Open a terminal emulator which is logged into a host. Optimizes out
+# the use of 'ssh' for localhost, and uses 'mosh' to log into laggy
+# hosts.
+
+opts=(-Y)
+ssh=(ssh $opts)
+host=$1
+shift
+
+# NE 01 Sep 2021 use mosh for far hosts
+case $host in
+  some-host.net) ssh=(zsh -lic "mosh $host");;
+esac
+
+case $host in
+  $HOST|localhost)
+    exec x-terminal-emulator;;
+  *)
+    exec x-terminal-emulator -e $ssh $host "$@";;
+esac

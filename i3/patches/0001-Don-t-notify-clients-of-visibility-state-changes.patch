@@ -1,0 +1,47 @@
+From a23bf0f64f3284511a698f00f32723db9dfffcbc Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 17 Nov 2023 22:29:32 -0800
+Subject: [PATCH] Don't notify clients of visibility state changes
+
+---
+ src/x.c | 23 ++++++++++++++++++++---
+ 1 file changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/src/x.c b/src/x.c
+index 1d65024c..b4c046e6 100644
+--- a/src/x.c
++++ b/src/x.c
+@@ -793,10 +793,27 @@ static void set_hidden_state(Con *con) {
+     bool should_be_hidden = con_is_hidden(con);
+     if (should_be_hidden == state->is_hidden)
+         return;
+-
++/*
++The purpose of this change is to allow some websites (such as Google
++Voice) to load in the background in Firefox. It simply prevents i3
++from notifying X11 when a window becomes invisible.
++
++One reason that Firefox is interested in _NET_WM_STATE_HIDDEN is to
++optimize resource usage, so that websites in hidden tabs don't consume
++CPU cycles. However, because it prevents some websites from loading
++fully when they are not being looked at, this can be wasteful of human
++resource usage.
++
++Firefox also notifies JavaScript / Document Object Model websites when
++a page becomes visible or invisible via the visibilitychange event
++(https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event).
++
++(N.B.: XCB is the X C-language Binding, an Xlib replacement used
++throughout i3)
++*/
+     if (should_be_hidden) {
+-        DLOG("setting _NET_WM_STATE_HIDDEN for con = %p\n", con);
+-        xcb_add_property_atom(conn, con->window->id, A__NET_WM_STATE, A__NET_WM_STATE_HIDDEN);
++        DLOG("not setting _NET_WM_STATE_HIDDEN for con = %p\n", con);
++//        xcb_add_property_atom(conn, con->window->id, A__NET_WM_STATE, A__NET_WM_STATE_HIDDEN);
+     } else {
+         DLOG("removing _NET_WM_STATE_HIDDEN for con = %p\n", con);
+         xcb_remove_property_atom(conn, con->window->id, A__NET_WM_STATE, A__NET_WM_STATE_HIDDEN);
+-- 
+2.32.0
+

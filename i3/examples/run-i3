@@ -1,0 +1,22 @@
+#!/bin/zsh
+# NE 01 Jan 2019
+
+# Wrapper for i3 which sources .zprofile upon restart, so that new
+# windows can inherit changes to configured environment variables.
+# Also appends an automatically generated assignment of output devices
+# to workspaces to the end of the configuration file (config.gen). See
+# i3-divide-workspaces
+
+(date; echo "$@") >> ~/.run-i3.log
+
+. ~/.zprofile
+
+confs=(~/.i3/config ~/.i3/output.conf.gen)
+(echo "# DO NOT EDIT";
+    echo "# AUTOMATICALLY GENERATED FROM $confs";
+    echo;
+    cat $confs) > ~/.i3/config.gen
+
+# Trick i3 into thinking it was executed as the path to this script.
+# That way when it restarts, it will execute this script again
+exec -a $(which run-i3) i3 -c ~/.i3/config.gen "$@"

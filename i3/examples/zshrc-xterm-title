@@ -1,0 +1,29 @@
+# NE 17 Nov 2023 Example configuration snippet showing how to change
+# the terminal window title after each command
+
+if [[ $TERM = *xterm* || $TERM = *rxvt* || $TERM = st* ]]; then
+    # set the xterm title
+
+    # this causes problems if not done correctly (see #zsh irc 16 DEC
+    # 2015). note the ${(q)1} which prevents escapes in $1 from
+    # messing us up
+    
+    # seems we have to put this in preexec and not a separate function
+    # to be called by preexec (e.g. _do_xterm_title () {})
+    preexec () {
+        print -n $(print -Pn "\e]0;%(!.# .)")${(q)1}$(print -Pn " [%M:%~]\a")
+        export LASTCMD=$1
+    }
+
+    # when a command is done executing, and the shell prompt
+    # reappears, then we'll change the title by prefixing "$" to the
+    # old title, to indicate command completion
+    precmd () {
+        if [[ $LASTCMD != "" ]]; then
+            qLASTCMD=${(q)LASTCMD}
+        else
+            qLASTCMD="";
+        fi
+        print -n $(print -Pn "\e]0;%(!.# .)\$ ")$qLASTCMD$(print -Pn " [%M:%~]\a")
+    }
+fi

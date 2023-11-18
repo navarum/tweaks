@@ -1,0 +1,181 @@
+# i3 config file (v4)
+#
+# Please see http://i3wm.org/docs/userguide.html for a complete reference!
+
+set $mod Mod4
+
+# Font for window titles. Will also be used by the bar unless a different font
+# is used in the bar {} block below.
+font pango:monospace 8
+
+# This font is widely installed, provides lots of unicode glyphs, right-to-left
+# text rendering and scalability on retina/hidpi displays (thanks to pango).
+#font pango:DejaVu Sans Mono 8
+
+# Before i3 v4.8, we used to recommend this one as the default:
+# font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+# The font above is very space-efficient, that is, it looks good, sharp and
+# clear in small sizes. However, its unicode glyph coverage is limited, the old
+# X core fonts rendering does not support right-to-left and this being a bitmap
+# font, it doesn’t scale on retina/hidpi displays.
+
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+# start a terminal
+#bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec remote-xterm localhost
+
+# Open screen session with mail
+bindsym $mod+Mod3+m exec x-terminal-emulator -e fssh -Xt my-laptop esds mail
+
+bindsym $mod+Mod3+h exec x-terminal-emulator -e sds hw
+bindsym $mod+Mod3+t exec x-terminal-emulator -e fssh -t my-laptop em notes/todo
+bindsym $mod+Mod3+d exec x-doc-key
+
+bindsym $mod+Mod3+0 exec remote-xterm host0
+bindsym $mod+Mod3+1 exec remote-xterm host1
+bindsym $mod+Mod3+2 exec remote-xterm host2
+
+# kill focused window
+bindsym $mod+c kill
+
+# Switch to the last window which had focus. See focus-last-helper-3
+exec --no-startup-id focus-last-helper-3
+bindsym $mod+l mark _temp, [con_mark=_last] focus, [con_mark=_temp] mark _last
+
+# change focus
+bindsym $mod+b focus left
+bindsym $mod+n focus down
+bindsym $mod+p focus up
+bindsym $mod+f focus right
+
+bindsym $mod+Mod3+b focus parent, focus left
+bindsym $mod+Mod3+n focus parent, focus down
+bindsym $mod+Mod3+p focus parent, focus up
+bindsym $mod+Mod3+f focus parent, focus right
+
+# Focus and move windows to "(o)ther" output device
+bindsym $mod+o focus output left, focus output down
+bindsym $mod+Ctrl+o move container to output left, focus output left
+bindsym $mod+Shift+o move container to output down, focus output down
+
+# Focus and move windows to "other" tile (mnemonic: q looks like o)
+bindsym $mod+q focus parent, focus right
+bindsym $mod+Ctrl+q mark _copy, focus parent, focus right, mark _paste, [con_mark=_copy] move to mark _paste, [con_mark=_copy] focus
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+## NE 03 Sep 2015
+# On kensington slimptype keyboard, alt+shift+f doesn't work
+# so we use ctrl instead of shift
+
+# move focused window
+bindsym $mod+Ctrl+b move left
+bindsym $mod+Ctrl+n move down
+bindsym $mod+Ctrl+p move up
+bindsym $mod+Ctrl+f move right
+# Old Kensington keyboard can't do Alt+Ctrl+f
+bindsym $mod+Ctrl+g move right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Ctrl+Left move left
+bindsym $mod+Ctrl+Down move down
+bindsym $mod+Ctrl+Up move up
+bindsym $mod+Ctrl+Right move right
+
+# split in horizontal orientation
+bindsym $mod+h split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $mod+Ctrl+w fullscreen toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+t layout tabbed
+bindsym $mod+e layout toggle split
+
+# toggle tiling / floating
+bindsym $mod+Ctrl+space floating toggle
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+# focus the child container
+bindsym $mod+m focus child
+
+# switch to workspace
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+# move focused container to workspace
+bindsym $mod+Ctrl+1 move container to workspace 1
+bindsym $mod+Ctrl+2 move container to workspace 2
+bindsym $mod+Ctrl+3 move container to workspace 3
+bindsym $mod+Ctrl+4 move container to workspace 4
+bindsym $mod+Ctrl+5 move container to workspace 5
+bindsym $mod+Ctrl+6 move container to workspace 6
+bindsym $mod+Ctrl+7 move container to workspace 7
+bindsym $mod+Ctrl+8 move container to workspace 8
+bindsym $mod+Ctrl+9 move container to workspace 9
+bindsym $mod+Ctrl+0 move container to workspace 10
+
+# reload the configuration file
+bindsym $mod+Ctrl+j reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Ctrl+r restart
+# wanted to bind this to "d" but not available on Kensington
+bindsym $mod+Ctrl+t exec i3-divide-workspaces-2
+
+hide_edge_borders both
+workspace_layout tabbed
+
+# for_window [class=".*"] floating disable
+# for_window [title=".*"] floating disable
+for_window [workspace=".*"] floating disable
+
+# NE 17 Nov 2023 hack to help with triggering R plot window resize
+for_window [class="R_x11"] fullscreen enable
+for_window [class="R_x11"] fullscreen disable
+
+force_focus_wrapping yes
+
+# "kill" and "yank". From advice on mailing list.
+bindsym $mod+w mark _copy
+bindsym $mod+y mark _paste, [con_mark=_copy] move to mark _paste, [con_mark=_copy] focus
+bindsym $mod+space mark _temp, [con_mark=_copy] focus, [con_mark=_temp] mark _copy
+
+# "focus-last" version of "yank"
+# Alt+Ctrl+L : bring the "last" window to where we are
+bindsym $mod+Ctrl+l mark _paste, [con_mark=_last] move to mark _paste, [con_mark=_last] focus
+# Alt+Shift+L : bring the current window to be next to the "last" window, and focus it
+bindsym $mod+Shift+l mark _copy, [con_mark=_copy] move to mark _last, [con_mark=_copy] focus
+
+
+bindsym $mod+Ctrl+Return exec my-x-browser
+
+bindsym button2 [con_id=__focused__] kill
+
+bar {
+#    status_command i3status
+  font pango:DejaVu Sans Mono 4
+  mode hide
+  modifier $mod+Ctrl
+  position bottom
+}
+
