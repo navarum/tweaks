@@ -1,7 +1,7 @@
-From 3304e714f204c22d8e5c2ae93828683e04d1569d Mon Sep 17 00:00:00 2001
+From 7dd4d2124c95877facc820205ecf44e015d93568 Mon Sep 17 00:00:00 2001
 From: Navarum <48705414+navarum@users.noreply.github.com>
 Date: Fri, 22 May 2020 15:42:37 -0700
-Subject: [PATCH 3/3] Return number of bytes written
+Subject: [PATCH 3/4] Return number of bytes written
 
 ---
  src/main/connections.c | 1 +
@@ -20,5 +20,5 @@ index 88f082c696..2c47589018 100644
  	Free(buf);
      }
 -- 
-2.26.2
+2.32.0
 

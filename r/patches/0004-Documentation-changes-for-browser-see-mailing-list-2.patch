@@ -1,0 +1,66 @@
+From e73f5e6317439b70d37f815953b768a466236a91 Mon Sep 17 00:00:00 2001
+From: Navarum <48705414+navarum@users.noreply.github.com>
+Date: Fri, 17 Nov 2023 16:14:30 -0800
+Subject: [PATCH 4/4] Documentation changes for browser() (see mailing list 22
+ Nov 2021)
+
+---
+ src/library/base/man/browser.Rd | 27 +++++++++++++++++++++------
+ 1 file changed, 21 insertions(+), 6 deletions(-)
+
+diff --git a/src/library/base/man/browser.Rd b/src/library/base/man/browser.Rd
+index a1378cedef..2eb6951cf7 100644
+--- a/src/library/base/man/browser.Rd
++++ b/src/library/base/man/browser.Rd
+@@ -43,8 +43,16 @@ browser(text = "", condition = NULL, expr = TRUE, skipCalls = 0L)
+   will be simpler.
+ 
+   The \code{skipCalls} argument should be used when the \code{browser()}
+-  call is nested within another debugging function:  it will look further
+-  up the call stack to report its location.
++  call is nested within another debugging function: it will look further
++  up the call stack to report its location. However, currently this
++  argument only affects the \code{Called from:} message printed before
++  the first \code{Browse>} prompt, and does not change the evaluation
++  environment of the expressions entered there, nor the output of the
++  \code{where} command. It is not clear when this argument would be
++  useful. It is for example currently impossible to change occurrences
++  of \code{stopifnot(x)} to act like \code{browser(expr=!x)} by
++  redefining \code{stopifnot()}; this must instead be done through a
++  textual search-and-replace or \code{options(error=recover)}.
+ 
+   At the browser prompt the user can enter commands or \R expressions,
+   followed by a newline.  The commands are
+@@ -56,11 +64,9 @@ browser(text = "", condition = NULL, expr = TRUE, skipCalls = 0L)
+     \item{\code{f}}{finish execution of the current loop or function} 
+     \item{\code{help}}{print this list of commands}
+     \item{\code{n}}{evaluate the next statement, stepping over 
+-      function calls.  For byte compiled functions interrupted by
+-      \code{browser} calls, \code{n} is equivalent to \code{c}.}
++      function calls.}
+     \item{\code{s}}{evaluate the next statement, stepping into
+-      function calls.  Again, byte compiled functions make
+-      \code{s} equivalent to \code{c}.}
++      function calls.}
+     \item{\code{where}}{print a stack trace of all active function calls.}
+     \item{\code{r}}{invoke a \code{"resume"} restart if one is
+       available; interpreted as an \R expression otherwise. Typically
+@@ -69,6 +75,15 @@ browser(text = "", condition = NULL, expr = TRUE, skipCalls = 0L)
+     \item{\code{Q}}{exit the browser and the current evaluation and
+       return to the top-level prompt.}
+   }
++
++  Both \code{n} and \code{s} also step out of function calls. However,
++  it is currently not possible with these commands to step out of the
++  function which called \code{browser()}. At the end of the function
++  which called \code{browser}, \code{n} and \code{s} are both equivalent
++  to \code{c}. These commands (\code{n} and \code{s}) are also
++  equivalent to \code{c} when trying to use them inside byte compiled
++  functions interrupted by \code{browser} calls.
++
+   Leading and trailing whitespace is ignored, except for an empty line.
+   Handling of empty lines depends on the \code{"browserNLdisabled"} 
+   \link[=options]{option}; if it is \code{TRUE}, empty lines are ignored.  
+-- 
+2.32.0
+
