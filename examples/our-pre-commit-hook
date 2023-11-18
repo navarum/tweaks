@@ -1,0 +1,10 @@
+#!/bin/sh
+# NE 28 Mar 2023 Goes in .git/hooks/pre-commit. Make sure my name
+# doesn't appear in commits, so I can try to maintain my (not very
+# secret) cover identity.
+
+if git grep --cached -wP 'MY_INITIALS|my_name'; then
+    >&2 echo "Found secrets in the repo"
+    >&2 echo "After removing the offending text, remember to re-add the file"
+    exit 1;
+fi
