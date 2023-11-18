@@ -1,2 +1,4 @@
 - fix this (should wrap...?) https://www.alsa-project.org/alsa-doc/alsa-lib/group___p_c_m___status.html#ga91c110525060b925ad4f0c21c205b757
 - should wrap https://history.amedd.army.mil/booksdocs/wwii/PM4/CH22.Typhoid.htm
+
+- add a configuration option allowing user to specify a command to be run for each URL visited (e.g. to add it to a history file or insert into shell history) (first setting environment variable before quitting)

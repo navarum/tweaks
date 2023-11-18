@@ -5,3 +5,5 @@
     - can we have the mousewheel slipwheel feature work also when shift is depressed
 
 - change autocomplete-all-the-things to recognize substrings
+
+- don't print whole help text on each argument parsing error

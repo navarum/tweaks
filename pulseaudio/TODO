@@ -1,1 +1,15 @@
 - update to gchini's latest version
+
+More general issues:
+
+- latency. seems to go high unnecessarily. the default (2 seconds) is way too big.
+
+- data to null. the default is to do this without warning, bad idea for user. better to keep file semantics, where opening a non-existent file results in an error rather than lost data
+
+- don't open all devices. it should be possible (or at least configurable) for another pulseaudio instance to write transparently to devices which are not being written to by the first instance.
+
+----
+
+- aliasing. pulseaudio takes away filesystem semantics and doesn't let you easily create aliases for sinks.
+    - actually the design should make the configurable sinks completely abstract (default, music, noise, phone, ...) and allow the user to dynamically connect these to various hardware devices. if some applications need special volume control, switch it to a new sink (e.g. "default.zoom") - no need to add persistent volume settings for each app.
+
