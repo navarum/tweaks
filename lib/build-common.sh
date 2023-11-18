@@ -214,7 +214,9 @@ build () {
     #     warn "Already built, delete .built to regenerate"
     #     return 0;
     # fi
+    cd $srcpath
     run_if_exists do_build default_build
+    cd $scriptdir
     # touch .built
 }
 
