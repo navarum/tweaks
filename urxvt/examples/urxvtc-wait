@@ -1,14 +1,58 @@
-#!/bin/sh
+#!/bin/zsh
+# NE 05 Dec 2019
+
 # Helper for urxvtc - "keep open" version of "urxvtc -e". Normally
 # 'urxvtc -e cmd' exits as soon as it finishes contacting the daemon
 # (urxvtd). This script keeps it open until cmd exits. Thanks to Marc
-# Lehmann.
+# Lehmann for the initial version.
+
+# It is useful for example when opening an editor in a terminal. See
+# for example my-x-editor and edit-clip.
+
+# The exit code is 9* if there was trouble executing urxvtc; it is 1
+# if the user closed the window, and 0 otherwise (irrespective of
+# command exit status)
 
 PID=$$
 
-trap "exit" USR1
+trap "exit 0" USR1
 
-urxvtc -e sh -c '"$@"; kill -USR1 '$PID x "$@"
+extra_args=();
+cmd_args=();
+while [[ $# -gt 0 ]]; do
+    case $1 in
+      -e) shift; cmd_args=($argv); argv=();;
+      -title|-T) shift; TITLE=$1; shift;;
+      --) extra_args=($argv); argv=();;
+      -*) >&2 echo "urxvtc-wait: unsupported option $1"; exit 1;;
+      *) extra_args=($argv); argv=(); break;;
+      esac
+done
+if [[ $#cmd_args -eq 0 ]]; then cmd_args=($SHELL); fi
+
+# Original version:
+# urxvtc -e sh -c '"$@"; kill -USR1 '$PID x "$@"
+# New version also detects when window is closed manually.
+
+# NE 03 Nov 2020 detect when window is closed vs command exited
+# test with "urxvtc-wait bash" and close window or Ctrl-D
+# exit code 1 = window closed
+# exit code 0 = command exited
+trap "exit 1" USR2
+
+# https://unix.stackexchange.com/questions/518012/correctly-quote-array-that-is-being-passed-indirectly-via-another-command/660051#660051
+# NE 26 Jul 2021 the proper way to pass arguments to subshell? ${(j: :)${(q@)cmd_args}}
+# remember that zsh print interprets backslash escapes
+# NE 29 Jul 2021 make sure "${${(q@)cmd_args}}" is outside single quotes!
+# NE 29 Jul 2021 create variable ur_cmd
+# NE 04 Aug 2021 use q+@ to get more concise version
+# for some reason putting the trap in a function didn't work
+ur_cmd=('trap "kill -USR2 '$PID'" EXIT; '"${${(q+@)cmd_args}}"'; trap "" EXIT; kill -USR1 '$PID x "$@")
+#>&2 print -l ur_cmd=$ur_cmd
+urxvtc $extra_args --title "$TITLE" -e sh -c $ur_cmd
+RES=$?
+# NE 25 Jul 2021 errors in executing urxvtc are prefixed with 9
+[[ $RES -ne 0 ]] && exit 9${RES}
 
 while :; do
     # NE 15 Jan 2020 what is the best way to do this? without the
@@ -17,3 +61,4 @@ while :; do
     wait;
 done
 
+exit 0

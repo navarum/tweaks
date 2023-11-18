@@ -1,0 +1,64 @@
+#!/bin/zsh
+# Run urxvt - try urxvtc, and if it fails then run urxvtd first.
+# Somewhat hacky since we try to fall back to xterm which is more
+# common to have installed.
+
+# For use with window managers or scripts as a drop-in replacement for
+# xterm. Edit this file to open your favorite terminal emulator
+# instead.
+
+timer() {
+  # NE 31 Jul 2021
+  # https://gist.github.com/knadh/123bca5cfdae8645db750bfb49cb44b0
+  echo $(($(print -P "%D{%s%6.}.")/1000.0))
+}
+
+opts=("$@")
+
+URXVT=(urxvtc)
+if [[ $WAIT -ne 0 ]]; then
+  URXVT=(urxvtc-wait)
+fi
+
+>&2 echo Running URXVT=$URXVT
+$URXVT $opts
+EC=$?
+echo EC=$EC
+
+# NE 31 Jul 2021 start daemon. why $WAIT -ne 0? because otherwise EC
+# doesn't make sense. test with:
+# $ killall urxvtd; x-terminal-emulator -e cat
+# $ killall urxvtd; WAIT=1 x-terminal-emulator -e cat
+if [[ ( $WAIT -ne 0 && $EC = 9* ) || ( $WAIT -eq 0 && $EC -ne 0 ) ]]; then
+  # NE 25 Jul 2021 urxvtc-wait error running urxvtc have exit codes *9
+  >&2 echo "Error running $URXVT; starting daemon"
+  urxvtd -q -o -f; sleep 0.5
+  # NE 31 Jul 2021 check time to see if urxvt wasn't found
+  t1=$(timer)
+  $URXVT $opts
+  EC=$?
+
+  # NE 31 Jul 2021 the below logic shouldn't usually get triggered
+  # but it is meant to help rescue us when urxvt isn't present or is
+  # broken, by ultimately defaulting to xterm. the origin is >10 years
+  # old? and it has been mostly modified to test $WAIT and distinguish
+  # between failed connections and other failures. may still need work
+  if [[ $EC -ne 0 ]]; then
+    >&2 echo $URXVT still failed
+    # NE 31 Jul 2021 if it doesn't succeed, check if it exited
+    # quickly, and try other options?
+    t2=$(timer)
+    >&2 echo Elapsed: $(( $t2 - $t1 ))
+    if [[ ( $WAIT -eq 0 ) || $(( $t2 - $t1 )) -lt 200 ]]; then # milliseconds
+      >&2 echo Short time or WAIT=$WAIT==0, trying urxvt and xterm
+      urxvt $opts || xterm $opts
+      exit $?
+    fi
+  else
+    exit $EC
+  fi
+else if [[ $EC -ne 0 ]]; then
+  exit $EC;
+fi; fi
+
+
