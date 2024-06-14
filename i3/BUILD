@@ -27,7 +27,7 @@ do_build () {
 do_install () {
   >&2 echo Installing link in $PREFIX/bin/i3
   # install in ~/.local/bin/ ?
-  ln -sr i3-source/build/i3 $PREFIX/bin/
+  ln -srf i3-source/build/i3 $PREFIX/bin/
 }
 
 . $scriptdir/../lib/build-common.sh
