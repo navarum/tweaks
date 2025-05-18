@@ -1,12 +1,14 @@
 #!/bin/bash
 
 scriptdir="$(cd $(dirname $0) && pwd)"
-set -e
+set -ex
 
 upstream=https://github.com/wch/r-source/
 #patchbase=9a003136dfcc2c1fda29abe50565e301a814cf5c # this one disappeared!
 #patchbase=a0b8a1a2ef04c15a5ca5e91525f7e5fa68540502
-patchbase=71c8050ba78632255d0dc85c8a448c4e26eaf9b2 # NE 12 Feb 2020
+#patchbase=71c8050ba78632255d0dc85c8a448c4e26eaf9b2 # NE 12 Feb 2020
+patchbase=a0de8b1dc88edc84319f28ec0edc4bf5520762f0 # NE 21 Nov 2024 latest
+#patchbase=2016493d7e73252d5e0cdf302ea4ba9e814b392f # NE 15 May 2025 latest
 
 # commit a0b8a1a2ef04c15a5ca5e91525f7e5fa68540502
 # Author: ripley <ripley@00db46b3-68df-0310-9c12-caf00c1e9a41>
@@ -63,7 +65,7 @@ do_configure () {
 }
 
 do_build () {
-    make -C $buildpath -j8
+    make -C build -j8
 }
 
 . $scriptdir/../lib/build-common.sh
