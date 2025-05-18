@@ -29,6 +29,11 @@ pre_configure_hook () {
     autoconf
 }
 
+# NE 16 Jul 2024
+# want
+# ./configure --enable-image=no
+# ./configure --enable-image=no --prefix=$HOME/.local/
+
 # do_configure () {
 #     ./waf configure --prefix $PREFIX
 # }

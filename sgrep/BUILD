@@ -22,7 +22,7 @@ do_build () {
 
 do_install () {
     (
-        cd $buildpath
+        cd $srcpath
         test -d $PREFIX/
         test -d $PREFIX/bin/
         ln -srf sgrep  $PREFIX/bin/

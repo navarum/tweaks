@@ -192,6 +192,10 @@ configure () {
         warn "Using old configuration; delete .configured to regenerate"
         return 0;
     fi
+  if [[ -z "$PREFIX" ]]; then
+    warn "Need to set PREFIX before configure (e.g. PREFIX=~/.local/ ./BUILD configure)"
+    exit 1
+  fi
     cd $srcpath
     run_if_exists pre_configure_hook
     run_if_exists do_configure default_configure
@@ -200,9 +204,12 @@ configure () {
     touch .configured
 }
 
-: ${buildpath:=$srcpath}
+# NE 04 Jan 2025 get rid of buildpath and make -C (trying to get urxvt to compile)
+#: ${buildpath:=$srcpath}
 default_build () {
-    make -C $buildpath -j8
+  cmd=(make -j8)
+  >&2 echo "default_build: ($PWD) ${cmd[@]}"
+  ${cmd[@]}
 }
 
 build () {
@@ -240,7 +247,7 @@ run_verb () {
 }
 
 # source configuration file
-
+# (currently sets PREFIX)
 config=$(dirname $BASH_SOURCE)/../BUILDVARS
 if [[ ! -f $config ]]; then
   debug No config file $config

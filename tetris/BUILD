@@ -11,14 +11,14 @@ srcpath=$srcdir
 configpath=
 
 do_build () {
-    (cd $buildpath/tetris && >&2 echo Writing tags &&
+    (cd tetris && >&2 echo Writing tags &&
         etags *.h *.c)
-    make -C $buildpath ./tetris/tetris
+    make ./tetris/tetris
 }
 
 do_install () {
     (
-        cd $buildpath
+        cd $srcpath
         test -d $PREFIX/
         test -d $PREFIX/bin/
         /usr/bin/install -c -m 0755 tetris/tetris  $PREFIX/bin/

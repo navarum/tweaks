@@ -40,7 +40,11 @@ do_configure () {
         --enable-unicode3 \
         --disable-frills \
         --disable-swapscreen \
-        --disable-fading
+        --disable-fading \
+        --enable-xft \
+        --disable-rxvt-scroll \
+        --disable-next-scroll \
+        --disable-xterm-scroll
 }
 
 . $scriptdir/../lib/build-common.sh
